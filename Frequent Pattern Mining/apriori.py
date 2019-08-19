@@ -46,6 +46,14 @@ def apriori_gen(L:list, k):
     return L_next
 
 
+def has_infrequent_subset(c:list, L:list):
+    for candidate in c:
+        for subset in list(itertools.combinations(candidate, len(candidate - 1))):
+            if subset not in L:
+                return True
+
+    return False
+
 if __name__ == "__main__":
     # d = load_dataset('Dataset/mushroom.dat')
     # find_frequent_1_itemsets(d, 5)
