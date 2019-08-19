@@ -3,7 +3,7 @@ import itertools
 
 def load_dataset(filename):
 
-    dataset = [i.strip().split() for i in open(filename).readlines()]
+    dataset = [sorted(int(n) for n in i.strip().split()) for i in open(filename).readlines()]
     size = len(dataset)
 
     print('Size of the Dataset : ', size)
@@ -16,7 +16,41 @@ def load_dataset(filename):
     avg_len = total_len / size
     print('Average Transaction Length : ', avg_len)
 
-    frequency = collections.Counter(itertools.chain.from_iterable(dataset))
-    print(frequency)
+    # print(dataset)
+    return dataset
 
-load_dataset('Dataset/mushroom.dat')
+
+def find_frequent_1_itemsets(dataset, min_sup):
+    min_sup = (len(dataset) * min_sup) // 100
+    frequency = dict(collections.Counter(itertools.chain.from_iterable(dataset)))
+    
+    L1 = dict()
+
+    for item, freq in frequency.items():
+        if freq > min_sup:
+            L1[item] = freq
+
+
+    # print(L1)
+    return L1
+
+
+def apriori_gen(L:list, k):
+    L_next = list()
+
+    for l1 in L:
+        for l2 in L:
+            if len(l1 & l2) == (k - 1):
+                L_next.append(l1 | l2)
+
+    return L_next
+
+
+if __name__ == "__main__":
+    # d = load_dataset('Dataset/mushroom.dat')
+    # find_frequent_1_itemsets(d, 5)
+
+    L = [set([1, 2]), set([1, 3]), set([1, 5]), set([2, 3]), set([2, 4]), set([2, 5])]
+
+    L3 = apriori_gen(L, 2)
+    print(L3)
