@@ -34,31 +34,43 @@ def find_frequent_1_itemsets(dataset, min_sup):
     # print(L1)
     return L1
 
-
+# Input : L_k (k : itemset size)
 def apriori_gen(L:list, k):
+    # Self Join Step
     L_next = list()
 
     for l1 in L:
         for l2 in L:
-            if len(l1 & l2) == (k - 1):
-                L_next.append(l1 | l2)
+            if len(set(l1) & set(l2)) == (k - 1):
+                L_next.append(list(set(l1) | set(l2)))
 
-    return L_next
+    # Removing Duplicates
+    L_set = set(tuple(x) for x in L_next)
+    L_k1 = [ list(x) for x in L_set ]
+
+    L_k1.sort(key = lambda x: L_next.index(x) )
+    L_k1_tuple = [tuple(i) for i in L_k1]
+
+    # Prune Step
+    for c in L_k1_tuple:
+        if has_infrequent_subset(c, L):
+            L_k1.remove(list(c))
+
+    # Returns list of lists [L_k + 1]
+    return L_k1
 
 
-def has_infrequent_subset(c:list, L:list):
-    for candidate in c:
-        for subset in list(itertools.combinations(candidate, len(candidate - 1))):
-            if subset not in L:
-                return True
+def has_infrequent_subset(candidate:tuple, L:list):
+    for subset in list(itertools.combinations(candidate, len(candidate) - 1)):
+        if list(subset) not in L:
+            return True
 
     return False
 
 if __name__ == "__main__":
-    # d = load_dataset('Dataset/mushroom.dat')
-    # find_frequent_1_itemsets(d, 5)
+    D = load_dataset('Dataset/chess.dat')
 
-    L = [set([1, 2]), set([1, 3]), set([1, 5]), set([2, 3]), set([2, 4]), set([2, 5])]
+    L = [[1, 2], [1, 3], [1, 5], [2, 3], [2, 4], [2, 5]]
 
     L3 = apriori_gen(L, 2)
     print(L3)
