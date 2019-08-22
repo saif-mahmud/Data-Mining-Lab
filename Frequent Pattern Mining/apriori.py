@@ -50,7 +50,7 @@ def apriori_gen(L: list, k):
     for l1 in L:
         for l2 in L:
             if len(set(l1) & set(l2)) == (k - 1):
-                L_next.append(list(set(l1) | set(l2)))
+                L_next.append(sorted(list(set(l1) | set(l2))))
 
     # Removing Duplicates
     L_set = set(tuple(x) for x in L_next)
