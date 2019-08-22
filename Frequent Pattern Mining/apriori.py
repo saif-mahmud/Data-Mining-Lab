@@ -2,6 +2,7 @@ import collections
 import itertools
 from trie_class import Trie
 import sys
+import timeit
 
 
 def load_dataset(filename):
@@ -86,12 +87,7 @@ def apriori(db: list, min_sup):
         return None
     
     # Creating list of 1-itemset(list itself)
-    _L1 = list()
-    for k in L1.keys():
-        l = list()
-        l.append(k)
-
-        _L1.append(l)
+    _L1 = [[k] for k in L1.keys()]
     _L1 = sorted(_L1)
 
     # print('L1 :', L1)
@@ -128,8 +124,14 @@ if __name__ == "__main__":
     print('Dataset :', str(sys.argv[1]))
     print('Min Support :', min_sup, '%')
 
+    start = timeit.default_timer()
+
     L = apriori(db, min_sup)
+
+    stop = timeit.default_timer()
 
     if L is not None:
         for i in range(len(L)):
             print((i + 1), '- Frequent Itemsets :', L[i])
+
+    print('\nTime: ', stop - start, " seconds")
