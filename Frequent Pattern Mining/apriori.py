@@ -1,5 +1,6 @@
 import collections
 import itertools
+from trie_class import Trie
 
 def load_dataset(filename):
 
@@ -27,7 +28,7 @@ def find_frequent_1_itemsets(dataset, min_sup):
     L1 = dict()
 
     for item, freq in frequency.items():
-        if freq > min_sup:
+        if freq >= min_sup:
             L1[item] = freq
 
 
@@ -67,10 +68,54 @@ def has_infrequent_subset(candidate:tuple, L:list):
 
     return False
 
+
+
+def apriori(db:list, min_sup):
+    L1 = find_frequent_1_itemsets(db, min_sup)
+
+    # print('L1', L1)
+    # pc : potential candidate
+    pc2 = list()
+    for k in L1.keys():
+        l = list()
+        l.append(k)
+
+        pc2.append(l)
+    pc2 = sorted(pc2)
+
+    while True:
+        c = apriori_gen(pc2, 1)
+        trie = Trie(db)
+        trie.build_trie(c)
+
+        L = list()
+
+        for itemset in c:
+            if trie.get_candidate_freq(itemset) >= min_sup:
+                L.append(itemset)
+
+        break
+
+    print(L)
+
+
+
+
+
+
+    # candidate2 = apriori_gen(sorted(), 1)
+
+    # print(candidate2)
+    # while True:
+
+
 if __name__ == "__main__":
-    D = load_dataset('Dataset/chess.dat')
+    db = load_dataset('Han.dat')
 
-    L = [[1, 2], [1, 3], [1, 5], [2, 3], [2, 4], [2, 5]]
+    # L = [[1, 2], [1, 3], [1, 5], [2, 3], [2, 4], [2, 5]]
 
-    L3 = apriori_gen(L, 2)
-    print(L3)
+    # L3 = apriori_gen(L, 2)
+    # print(L3)
+
+    apriori(db, (2/9) * 100)
+
