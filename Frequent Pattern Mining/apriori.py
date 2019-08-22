@@ -26,7 +26,8 @@ def load_dataset(filename):
 
 
 def find_frequent_1_itemsets(dataset, min_sup):
-    min_sup = (len(dataset) * min_sup) // 100
+    # print('1 - item func : min sup :', min_sup)
+
     frequency = dict(collections.Counter(
         itertools.chain.from_iterable(dataset)))
 
@@ -77,15 +78,17 @@ def has_infrequent_subset(candidate: tuple, L: list):
 
 def apriori(db: list, min_sup):
     min_sup = (len(db) * min_sup) // 100
+    # print('Apriori - min sup :', min_sup)
 
     levels = list()
 
     L1 = find_frequent_1_itemsets(db, min_sup)
+    # print('L-1 :', L1)
 
     if bool(L1) == False:
         print('No 1-Itemset Satisfies Given Minimum Support Threshold')
         return None
-    
+
     # Creating list of 1-itemset(list itself)
     _L1 = [[k] for k in L1.keys()]
     _L1 = sorted(_L1)
@@ -94,7 +97,6 @@ def apriori(db: list, min_sup):
 
     levels.append(_L1)
     # print('Levels :', levels)
-    
 
     while True:
         candidates = apriori_gen(levels[-1], len(levels[-1][0]))
@@ -105,10 +107,14 @@ def apriori(db: list, min_sup):
 
         L = list()
 
+        print('Func : Min Sup -', min_sup)
+
         for itemset in candidates:
+            print(itemset, trie.get_candidate_freq(itemset), trie.get_candidate_freq(itemset) >= min_sup)
             if trie.get_candidate_freq(itemset) >= min_sup:
-                L.append(itemset)
-                
+                # print(itemset, trie.get_candidate_freq(itemset), trie.get_candidate_freq(itemset) >= min_sup)
+                L.append(sorted(itemset))
+
         if not L:
             break
 
@@ -120,9 +126,10 @@ def apriori(db: list, min_sup):
 if __name__ == "__main__":
     db = load_dataset(str(sys.argv[1]))
     min_sup = float(sys.argv[2])
-    
+
     print('Dataset :', str(sys.argv[1]))
     print('Min Support :', min_sup, '%')
+    print('Min Support Count :', (len(db) * min_sup) // 100)
 
     start = timeit.default_timer()
 
@@ -132,6 +139,8 @@ if __name__ == "__main__":
 
     if L is not None:
         for i in range(len(L)):
+            print()
+            print((i + 1), '- Frequent Itemsets Count :', len(L[i]))
             print((i + 1), '- Frequent Itemsets :', L[i])
 
     print('\nTime: ', stop - start, " seconds")
