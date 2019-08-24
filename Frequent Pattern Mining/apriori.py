@@ -107,10 +107,10 @@ def apriori(db: list, min_sup):
 
         L = list()
 
-        print('Func : Min Sup -', min_sup)
+        # print('Func : Min Sup -', min_sup)
 
         for itemset in candidates:
-            print(itemset, trie.get_candidate_freq(itemset), trie.get_candidate_freq(itemset) >= min_sup)
+            # print(itemset, trie.get_candidate_freq(itemset), trie.get_candidate_freq(itemset) >= min_sup)
             if trie.get_candidate_freq(itemset) >= min_sup:
                 # print(itemset, trie.get_candidate_freq(itemset), trie.get_candidate_freq(itemset) >= min_sup)
                 L.append(sorted(itemset))
