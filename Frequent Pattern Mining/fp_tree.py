@@ -90,7 +90,7 @@ class FP_tree:
             
             
     def get_predecessors(self, current_node:Node, pred_list:list):
-        if current_node.parent.name == -1:
+        if current_node.parent == self.root_node:
             return pred_list
 
         pred_list.append(current_node.parent.name)
@@ -139,7 +139,23 @@ def get_freq_patterns(cond_pattern_base, min_sup, heads:list):
     return
 
 
-        
+
+
+def fp_growth(item, cond_db:list, min_sup):
+    freq_list = list()
+
+    if len(cond_db) == 0:
+        freq_list.append([item])
+        return freq_list
+
+    fp_tree = FP_tree(cond_db, min_sup)
+    fp_tree.build_fp_tree()
+
+    _cond_db_sub = fp_tree.get_conitional_db()
+
+    for _item, _db in _cond_db_sub.items():
+        return fp_growth(_item, _db, min_sup)
+
 
 
 
@@ -151,22 +167,25 @@ if __name__ == "__main__":
     x = fptree.get_conitional_db()
     print('Cond_DB :', x)
 
-    # ft2 = FP_tree(x[3], 2)
-    # ft2.build_fp_tree()
+    ft2 = FP_tree(x[3], 2)
+    ft2.build_fp_tree()
 
-    # ft2._print(ft2.root_node)
-    # y = ft2.get_conitional_db()
+    ft2._print(ft2.root_node)
+    y = ft2.get_conitional_db()
 
-    # print('cdb - I3 :', y)
+    print('cdb - I3 :', y)
 
-    # ft3 = FP_tree(x[1], 2)
-    # ft3.build_fp_tree()
+    ft3 = FP_tree(x[1], 2)
+    ft3.build_fp_tree()
 
-    # ft3._print(ft3.root_node)
-    # z = ft3.get_conitional_db()
+    ft3._print(ft3.root_node)
+    z = ft3.get_conitional_db()
 
-    # print('cdb :', z)
+    print('cdb :', z)
+
+    l = fp_growth(3, x[3], 2)
+    print('f :', l)
     
-    get_freq_patterns(fptree.get_conitional_db(), 2, [])
+    # get_freq_patterns(fptree.get_conitional_db(), 2, [])
 
     # print(f)
