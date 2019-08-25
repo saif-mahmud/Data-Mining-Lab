@@ -107,38 +107,36 @@ class FP_tree:
         # print('Branches :', branches)
         return branches
 
-def get_freq_patterns(cond_pattern_base, min_sup):
 
-    freq = list()
+
+# def freq_recursive(item, pattern:list):
+#     if 
+
+def is_single_path(nodelinks:dict):
+    for k,v in nodelinks.items():
+        if len(v) > 1:
+            return False
+    return True
+
+
+
+def get_freq_patterns(cond_pattern_base, min_sup, heads:list):
 
     for item, c_db in cond_pattern_base.items():
+        if len(c_db) == 0:
+            continue
         fp_tree = FP_tree(c_db, min_sup)
         fp_tree.build_fp_tree()
-        
+        if is_single_path(fp_tree.node_link):
+            print('found single_path_tree: ')
+            print('current head: ', heads)
+            fp_tree._print(fp_tree.root_node)
+            heads = []
+        new_cond_db = fp_tree.get_conitional_db()
+        heads.append(item)
+        get_freq_patterns(new_cond_db, min_sup, heads)
 
-        branches = fp_tree.get_branches()
-        # print(item, 'Branch :', branches)
-
-        for b in branches:
-            # print('b :', b)
-
-            for l in range(1, len(b) + 1):
-                comb = list(itertools.combinations(b, l))
-                # print('Comb :', comb)
-
-                for s in comb:
-                    _comb = list(s)
-                    # print('_c1 :', _comb)
-                    _comb.append(item)
-                    # print('_c2 :', _comb)
-
-                    # print('U : ', _comb)
-
-                    freq.append(_comb)
-                
-                # print('Freq :', freq)
-
-    return freq
+    return
 
 
         
@@ -153,22 +151,22 @@ if __name__ == "__main__":
     x = fptree.get_conitional_db()
     print('Cond_DB :', x)
 
-    ft2 = FP_tree(x[3], 2)
-    ft2.build_fp_tree()
+    # ft2 = FP_tree(x[3], 2)
+    # ft2.build_fp_tree()
 
-    ft2._print(ft2.root_node)
-    y = ft2.get_conitional_db()
+    # ft2._print(ft2.root_node)
+    # y = ft2.get_conitional_db()
 
-    print('cdb - I3 :', y)
+    # print('cdb - I3 :', y)
 
-    ft3 = FP_tree(x[1], 2)
-    ft3.build_fp_tree()
+    # ft3 = FP_tree(x[1], 2)
+    # ft3.build_fp_tree()
 
-    ft3._print(ft3.root_node)
-    z = ft3.get_conitional_db()
+    # ft3._print(ft3.root_node)
+    # z = ft3.get_conitional_db()
 
-    print('cdb :', z)
+    # print('cdb :', z)
     
-    # f = get_freq_patterns(fptree.get_conitional_db(), 2)
+    get_freq_patterns(fptree.get_conitional_db(), 2, [])
 
     # print(f)
