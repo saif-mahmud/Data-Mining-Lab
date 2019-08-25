@@ -1,5 +1,6 @@
 from apriori import load_dataset, find_frequent_1_itemsets
 import itertools
+import sys
 
 class Node:
 
@@ -78,8 +79,8 @@ class FP_tree:
             for j in self.node_link[i]:
                 cond_trx = self.get_predecessors(j, [])
 
-                if len(cond_trx) == 0:
-                    continue
+                # if len(cond_trx) == 0:
+                #     continue
                 # print(cond_trx)
                 for _ in range(j.frequency):
                     conditional_db[i].append(cond_trx)
@@ -109,83 +110,49 @@ class FP_tree:
 
 
 
-# def freq_recursive(item, pattern:list):
-#     if 
-
-def is_single_path(nodelinks:dict):
-    for k,v in nodelinks.items():
-        if len(v) > 1:
-            return False
-    return True
-
-
-
-def get_freq_patterns(cond_pattern_base, min_sup, heads:list):
-
-    for item, c_db in cond_pattern_base.items():
-        if len(c_db) == 0:
-            continue
-        fp_tree = FP_tree(c_db, min_sup)
-        fp_tree.build_fp_tree()
-        if is_single_path(fp_tree.node_link):
-            print('found single_path_tree: ')
-            print('current head: ', heads)
-            fp_tree._print(fp_tree.root_node)
-            heads = []
-        new_cond_db = fp_tree.get_conitional_db()
-        heads.append(item)
-        get_freq_patterns(new_cond_db, min_sup, heads)
-
-    return
-
-
-
-
 def fp_growth(item, cond_db:list, min_sup):
-    freq_list = list()
-
-    if len(cond_db) == 0:
-        freq_list.append([item])
-        return freq_list
-
+    l2 = [[item]]
+    # cnt=0
+    # for item_list in cond_db:
+    #     if not item_list:
+    #         cnt+=1
+    #     if cnt>=min_sup:
+    #         l2.append([item])
+    #         break   
+    #print("cond_data",cond_db,l2)
     fp_tree = FP_tree(cond_db, min_sup)
     fp_tree.build_fp_tree()
-
+    #fp_tree._print(fp_tree.root_node)
     _cond_db_sub = fp_tree.get_conitional_db()
+    #print('c_sub :', _cond_db_sub)
 
     for _item, _db in _cond_db_sub.items():
-        return fp_growth(_item, _db, min_sup)
+        l = fp_growth(_item, _db, min_sup)
+        for i in l:
+            # print('i :', i)
+            i.append(item)
+            l2.append(i)      
+    return l2
 
 
+def driver_fp_growth(db:list, min_sup):
+    fp_tree = FP_tree(db, min_sup)
+    fp_tree.build_fp_tree()
+
+    proj_db_dict = fp_tree.get_conitional_db()
+
+    for item_1, cond_db in proj_db_dict.items():
+        ls = fp_growth(item_1, cond_db, min_sup)
+        for l in ls:
+            if len(l)==7:
+                print(l)
 
 
 if __name__ == "__main__":
-    fptree = FP_tree(load_dataset('Han.dat'), 2)
-    fptree.build_fp_tree()
-    # print(fptree.node_link)
-    fptree._print(fptree.root_node)
-    x = fptree.get_conitional_db()
-    print('Cond_DB :', x)
+    db = load_dataset(str(sys.argv[1]))
+    min_sup = float(sys.argv[2])
 
-    ft2 = FP_tree(x[3], 2)
-    ft2.build_fp_tree()
+    _min_sup = (len(db) * min_sup) // 100
+    print('Min Sup :', _min_sup)
 
-    ft2._print(ft2.root_node)
-    y = ft2.get_conitional_db()
-
-    print('cdb - I3 :', y)
-
-    ft3 = FP_tree(x[1], 2)
-    ft3.build_fp_tree()
-
-    ft3._print(ft3.root_node)
-    z = ft3.get_conitional_db()
-
-    print('cdb :', z)
-
-    l = fp_growth(3, x[3], 2)
-    print('f :', l)
-    
-    # get_freq_patterns(fptree.get_conitional_db(), 2, [])
-
-    # print(f)
+    driver_fp_growth(db, _min_sup)
