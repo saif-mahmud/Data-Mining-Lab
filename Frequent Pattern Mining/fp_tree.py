@@ -27,6 +27,7 @@ class FP_tree:
         self.ordered_1_itemset = self.get_ordered_1_itemset()
         self.root_node = Node(-1, None)
         self.node_link = {k: [] for k in self.ordered_1_itemset}
+        self.cond_cnt = 0
 
     def get_ordered_1_itemset(self):
         L1 = find_frequent_1_itemsets(self.db, self.min_sup)
@@ -95,12 +96,20 @@ class FP_tree:
         pred_list.append(current_node.parent.name)
         return self.get_predecessors(current_node.parent, pred_list)
 
+cond_cnt = 0
 
 def fp_growth(item, cond_db: list, min_sup):
     l2 = [[item]]
-    
+    global cond_cnt
+
     fp_tree = FP_tree(cond_db, min_sup)
     fp_tree.build_fp_tree()
+    
+    for li in cond_db:
+        if li!=[]:
+            break
+    else: 
+        cond_cnt += 1
     
     _cond_db_sub = fp_tree.get_conitional_db()
     
@@ -111,14 +120,18 @@ def fp_growth(item, cond_db: list, min_sup):
             i.append(item)
             l2.append(i)
     
+
     return l2
 
 
 def driver_fp_growth(db: list, min_sup):
+    freq_cnt = 0
+
     fp_tree = FP_tree(db, min_sup)
     fp_tree.build_fp_tree()
 
     proj_db_dict = fp_tree.get_conitional_db()
+
 
     for item_1, cond_db in proj_db_dict.items():
         ls = fp_growth(item_1, cond_db, min_sup)
@@ -126,8 +139,14 @@ def driver_fp_growth(db: list, min_sup):
         print('\n')
         print('Itemset -', item_1, ':')
         print('Conditional Pattern Base Size:', len(cond_db))
+        freq_cnt += len(ls)
         print('Frequent Patterns Generated :', len(ls))
         print(ls)
+
+    print('\nSummary ')
+    print('==========================================')
+    print('Total # of Conditional Tree Built :', cond_cnt)
+    print('Total # of Frequent Patterns :', freq_cnt)
 
 
 if __name__ == "__main__":
