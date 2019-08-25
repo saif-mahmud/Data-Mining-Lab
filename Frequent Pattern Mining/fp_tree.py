@@ -11,7 +11,7 @@ class Node:
         self.is_leaf = True
 
     def add_child(self, name: int, child):
-        child.frequency=1
+        child.frequency = 1
         self.is_leaf = False
         self.children[name] = child
 
@@ -89,8 +89,6 @@ class FP_tree:
         return conditional_db
             
             
-
-
     def get_predecessors(self, current_node:Node, pred_list:list):
         if current_node.parent.name == -1:
             return pred_list
@@ -148,11 +146,29 @@ def get_freq_patterns(cond_pattern_base, min_sup):
 
 
 if __name__ == "__main__":
-    fptree = FP_tree(load_dataset('Han.dat'), 1)
+    fptree = FP_tree(load_dataset('Han.dat'), 2)
     fptree.build_fp_tree()
     # print(fptree.node_link)
-    # fptree._print(fptree.root_node)
-    
-    f = get_freq_patterns(fptree.get_conitional_db(), 2)
+    fptree._print(fptree.root_node)
+    x = fptree.get_conitional_db()
+    print('Cond_DB :', x)
 
-    print(f)
+    ft2 = FP_tree(x[3], 2)
+    ft2.build_fp_tree()
+
+    ft2._print(ft2.root_node)
+    y = ft2.get_conitional_db()
+
+    print('cdb - I3 :', y)
+
+    ft3 = FP_tree(x[1], 2)
+    ft3.build_fp_tree()
+
+    ft3._print(ft3.root_node)
+    z = ft3.get_conitional_db()
+
+    print('cdb :', z)
+    
+    # f = get_freq_patterns(fptree.get_conitional_db(), 2)
+
+    # print(f)
