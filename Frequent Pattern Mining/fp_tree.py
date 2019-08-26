@@ -135,12 +135,12 @@ def driver_fp_growth(db: list, min_sup):
     for item_1, cond_db in proj_db_dict.items():
         ls = fp_growth(item_1, cond_db, min_sup)
 
-        print('\n')
-        print('Itemset -', item_1, ':')
-        print('Conditional Pattern Base Size:', len(cond_db))
+        # print('\n')
+        # print('Itemset -', item_1, ':')
+        # print('Conditional Pattern Base Size:', len(cond_db))
         freq_cnt += len(ls)
-        print('Frequent Patterns Generated :', len(ls))
-        print(ls)
+        # print('Frequent Patterns Generated :', len(ls))
+        # print(ls)
 
     print('\nSummary ')
     print('==========================================')
