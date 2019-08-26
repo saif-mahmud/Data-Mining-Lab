@@ -27,7 +27,6 @@ class FP_tree:
         self.ordered_1_itemset = self.get_ordered_1_itemset()
         self.root_node = Node(-1, None)
         self.node_link = {k: [] for k in self.ordered_1_itemset}
-        self.cond_cnt = 0
 
     def get_ordered_1_itemset(self):
         L1 = find_frequent_1_itemsets(self.db, self.min_sup)
