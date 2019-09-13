@@ -1,14 +1,13 @@
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 
-def entropy(dataset:pd.DataFrame, class_label_column):
+def entropy(dataset: pd.DataFrame, class_label_column):
     entropy_node = 0
 
     values = dataset[class_label_column].unique()
 
     for val in values:
-
         # print(val, dataset[class_label_column].value_counts()[val])
 
         p_i = dataset[class_label_column].value_counts()[val] / len(dataset[class_label_column])
@@ -17,7 +16,7 @@ def entropy(dataset:pd.DataFrame, class_label_column):
     return entropy_node
 
 
-def entropy_attribute(dataset:pd.DataFrame, class_label_column, attribute):
+def entropy_attribute(dataset: pd.DataFrame, class_label_column, attribute):
     entropy_attr = 0
 
     attr_vars = dataset[attribute].unique()
@@ -41,12 +40,11 @@ def entropy_attribute(dataset:pd.DataFrame, class_label_column, attribute):
     return entropy_attr
 
 
-def gain(dataset:pd.DataFrame, class_label_column, attribute):
-
+def gain(dataset: pd.DataFrame, class_label_column, attribute):
     _gain = entropy(dataset, class_label_column) - entropy_attribute(dataset, class_label_column, attribute)
 
     return _gain
 
 
-def ginni(data_partition:pd.DataFrame, class_labels):
+def ginni(data_partition: pd.DataFrame, class_labels):
     pass
