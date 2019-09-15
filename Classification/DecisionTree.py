@@ -38,19 +38,18 @@ class DecisionTree:
                 tree[spl_attr][val] = self._train_recursive(data_partition, class_label_column)
         return tree
 
-
-    def predict(self, data:pd.DataFrame):
+    def predict(self, data: pd.DataFrame):
         preds = []
         if self.decision_tree is None:
             print('call fit first')
             return
-        for index,r in data.iterrows():
+        for index, r in data.iterrows():
             preds.append(self.predict_single(r, self.decision_tree))
         return preds
 
-    def predict_single(self,row, dt:dict=None):
+    def predict_single(self, row, dt: dict = None):
         for key in dt:
-            val =  row[key]
+            val = row[key]
             if val not in dt[key]:
                 pred = 'e'
                 continue
@@ -61,8 +60,7 @@ class DecisionTree:
                 pred = dt
         return pred
 
-
-    def _find_splitting_attribute(self, dataset:pd.DataFrame, class_label_column):
+    def _find_splitting_attribute(self, dataset: pd.DataFrame, class_label_column):
         attr_cols = list(dataset.columns)
         attr_cols.remove(class_label_column)
         # print(attr_cols)
@@ -76,41 +74,36 @@ class DecisionTree:
         # print(max_gain, splitting_attr)
         return splitting_attr
 
-
     def print_tree(self):
         pprint(self.decision_tree)
 
 
-
-def calculate_accuracy(predictions:list, class_labels:list):
+def calculate_accuracy(predictions: list, class_labels: list):
     t_len = len(predictions)
     correct = 0.0
     for i in range(t_len):
         if predictions[i] == class_labels[i]:
-            correct+=1
-    return 100*(correct/t_len)
-
-
-
+            correct += 1
+    return 100 * (correct / t_len)
 
 
 if __name__ == '__main__':
     data = load_dataset('Dataset/Mushroom/agaricus-lepiota.data')
-    #shuffle    ``
+    # shuffle    ``
     # data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
     k = 5
-    fold_size = data.shape[0]//k
+    fold_size = data.shape[0] // k
     begin_index = 0
-    end_index = begin_index+fold_size
+    end_index = begin_index + fold_size
     print('dataset size', len(data))
     class_label_column = 0
     for i in range(k):
         # print(begin_index, end_index)
-        test_frame = data[begin_index:end_index+1].reset_index(drop=True)
+        test_frame = data[begin_index:end_index + 1].reset_index(drop=True)
         test_labels = test_frame[class_label_column]
         test_frame.drop(columns=class_label_column, inplace=True)
-        train_frame = data.drop(data.iloc[begin_index:end_index+1].index).reset_index(drop=True)
+        train_frame = data.drop(data.iloc[begin_index:end_index + 1].index).reset_index(drop=True)
         print(len(train_frame))
         dt = DecisionTree()
         dt.fit(train_frame, class_label_column=0)
@@ -118,9 +111,8 @@ if __name__ == '__main__':
         preds = dt.predict(test_frame)
         print(calculate_accuracy(preds, list(test_labels)))
         # train_frame = data.drop(range(begin_index,end_index+1), axis=0)
-        begin_index = end_index+1
-        if i == k-2:
-            end_index = data.shape[0]-1
+        begin_index = end_index + 1
+        if i == k - 2:
+            end_index = data.shape[0] - 1
         else:
-            end_index = end_index+fold_size
-
+            end_index = end_index + fold_size
