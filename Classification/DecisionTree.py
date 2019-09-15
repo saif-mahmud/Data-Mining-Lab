@@ -2,12 +2,7 @@ from pprint import pprint
 
 import pandas as pd
 
-from attribute_selection import gain
-
-
-def load_dataset(filename: str):
-    df = pd.read_csv(filename, header=None)
-    return df
+from attribute_selection import gain, load_dataset
 
 
 class DecisionTree:
