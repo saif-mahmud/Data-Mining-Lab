@@ -95,7 +95,7 @@ def calculate_accuracy(predictions:list, class_labels:list):
 
 
 if __name__ == '__main__':
-    data = load_datadet('Dataset/Mushroom/agaricus-lepiota.data')
+    data = load_dataset('Dataset/Mushroom/agaricus-lepiota.data')
     #shuffle    ``
     # data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
