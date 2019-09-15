@@ -2,7 +2,7 @@ from pprint import pprint
 
 import pandas as pd
 
-from attribute_selection import gain, load_dataset
+from AttributeSelectionMeasure import gain, load_dataset
 
 
 class DecisionTree:
