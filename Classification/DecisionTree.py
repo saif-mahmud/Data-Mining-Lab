@@ -16,6 +16,7 @@ class DecisionTree:
     def _train_recursive(self, dataset: pd.DataFrame, class_label_column, tree=None):
         # print(dataset.shape)
         spl_attr = self._find_splitting_attribute(dataset, class_label_column)
+        # print(spl_attr)
         attr_values = dataset[spl_attr].unique()
         # print(spl_attr, attr_values)
 
@@ -26,8 +27,9 @@ class DecisionTree:
         for val in attr_values:
             data_partition = dataset[dataset[spl_attr] == val]
             data_partition = data_partition.drop(columns=[spl_attr])  # remove the splitting attribute
-            if data_partition.shape[0] == 0:
-                tree[spl_attr][val] = 'majority'
+            if data_partition.shape[0] == 0 or data_partition.shape[1] == 1:
+                tree[spl_attr][val] = data_partition[class_label_column].mode()[0]
+                continue
                 # print('empty')
             class_values = data_partition[class_label_column].unique()
             if len(class_values) == 1:
@@ -90,9 +92,9 @@ def calculate_accuracy(predictions: list, class_labels: list):
 if __name__ == '__main__':
     data = load_dataset('Dataset/Mushroom/agaricus-lepiota.data')
     # shuffle    ``
-    # data = data.sample(frac=1).reset_index(drop=True)
+    data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
-    k = 5
+    k = 2
     fold_size = data.shape[0] // k
     begin_index = 0
     end_index = begin_index + fold_size
@@ -104,10 +106,10 @@ if __name__ == '__main__':
         test_labels = test_frame[class_label_column]
         test_frame.drop(columns=class_label_column, inplace=True)
         train_frame = data.drop(data.iloc[begin_index:end_index + 1].index).reset_index(drop=True)
-        print(len(train_frame))
+        # print(len(train_frame))
         dt = DecisionTree()
-        dt.fit(train_frame, class_label_column=0)
-        # dt.print_tree()
+        dt.fit(train_frame, class_label_column=class_label_column)
+        dt.print_tree()
         preds = dt.predict(test_frame)
         print(calculate_accuracy(preds, list(test_labels)))
         # train_frame = data.drop(range(begin_index,end_index+1), axis=0)

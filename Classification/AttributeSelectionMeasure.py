@@ -77,7 +77,7 @@ def gini_attribute(dataset: pd.DataFrame, class_label_column, attribute):
     attr_vals = dataset[attribute].unique()
     # print(attr_vals)
 
-    mx_gini = 0
+    min_gini = float('inf')
     splitting_attr = list()
 
     for r in range(1, math.floor(len(attr_vals) / 2) + 1):
@@ -103,22 +103,67 @@ def gini_attribute(dataset: pd.DataFrame, class_label_column, attribute):
 
             # print('GINI_ATTR :', _gini_attr)
 
-            if _gini_attr > mx_gini:
-                mx_gini = _gini_attr
+            if _gini_attr < min_gini:
+                min_gini = _gini_attr
                 splitting_attr = [d1, d2]
 
             # print('MAX GINI:', mx_gini)
             # print(splitting_attr, '\n')
 
-    return mx_gini, splitting_attr
+    return min_gini, splitting_attr
+
+
+def gini_cont(dataset: pd.DataFrame, class_label_column, attribute):
+    attr_col = dataset[attribute].sort_values()
+
+    min_gini = float('inf')
+    split_pt = 0
+
+    for i in range(len(attr_col) - 1):
+        mid_pt = (attr_col[i] + attr_col[i + 1]) / 2
+
+        d1 = dataset[dataset[attribute] <= mid_pt]
+        d2 = dataset[dataset[attribute] > mid_pt]
+
+        g1 = gini(d1, class_label_column)
+        g2 = gini(d2, class_label_column)
+
+        _gini = ((d1.shape[0] / dataset_size) * g1) + ((d2.shape[0] / dataset_size) * g2)
+
+        if _gini < min_gini:
+            min_gini = _gini
+            split_pt = mid_pt
+
+    return min_gini, split_pt
+
+
+def selct_attr_gini_cont(dataset: pd.DataFrame, class_label_column):
+    attr_cols = list(dataset.columns)
+    attr_cols.remove(class_label_column)
+
+    min_gini = float('inf')
+    best_spl_pt = 0
+    spl_attr = None
+
+    for attr in attr_cols:
+        mn_g, spl_pt = gini_cont(dataset, class_label_column, attr)
+        print('Attr :', attr, 'Gini :',mn_g, 'Split Pt:', spl_pt)
+
+        if mn_g < min_gini:
+            min_gini = mn_g
+
+            best_spl_pt = spl_pt
+            spl_attr = attr
+
+    return spl_attr, best_spl_pt
 
 
 if __name__ == '__main__':
-    data = load_dataset('Dataset/play_tennis.csv')
+    data = load_dataset('Dataset/Iris/iris.data')
 
     print(gini(data, class_label_column=4))
     print()
 
-    g_mx, spl_attr = gini_attribute(data, class_label_column=4, attribute=2)
-    print(g_mx)
-    print(spl_attr)
+    spl_attr, spl_pt = selct_attr_gini_cont(data, class_label_column=4)
+
+    print(spl_attr, spl_pt)
