@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # shuffle    ``
     data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
-    k = 3
+    k = 10
     fold_size = data.shape[0] // k
     begin_index = 0
     end_index = begin_index + fold_size
