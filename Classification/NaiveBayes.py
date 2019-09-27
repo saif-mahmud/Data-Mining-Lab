@@ -2,9 +2,8 @@ from pprint import pprint
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import StratifiedKFold
-
 from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold
 
 
 def load_dataset(file: str, class_label_column):
@@ -96,18 +95,15 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
                     if test_data_feature[idx] in cond_prob[label][idx].keys():
                         posterior_prob *= cond_prob[label][idx][test_data_feature[idx]]
                     else:
-                        posterior_prob *= 0
-                    # print('Post Prob - Cat :', posterior_prob)
+                        cls_cnt = np.count_nonzero(y_train == label)
+                        uniq_cnt = np.unique(y)
+                        posterior_prob *= (1 / (cls_cnt + len(uniq_cnt) + 1))
                 else:
                     posterior_prob *= gaussian_distribution(test_data_feature[idx], cond_prob[label][idx]['mean'],
                                                             cond_prob[label][idx]['std'])
 
-                    # print('Post Prob - Num :', posterior_prob)
-
             bayes_prob = prior_prob * posterior_prob
-            # print('P(', label,') * P(X|', label, ') :', bayes_prob)
-
-
+            # print('P(', label, ') * P(X|', label, ') :', bayes_prob)
 
             if bayes_prob > max_prob:
                 max_prob = bayes_prob
@@ -120,11 +116,11 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/BreastCancer/breast-cancer.data', class_label_column=0)
+    X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
     # pprint(X)
     # print(type(X[0]))
 
-    num_idx = []
+    num_idx = [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 
     for idx in range(len(categorical)):
@@ -141,17 +137,17 @@ if __name__ == '__main__':
     skf = StratifiedKFold(n_splits=5, shuffle=True)
     skf.get_n_splits(X, y)
 
-    print(skf)
+    # print(skf)
 
     for train_index, test_index in skf.split(X, y):
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
-        print('X train :')
-        pprint(X_train)
+        # print('X train :')
+        # pprint(X_train)
 
-        print('y - Train :')
-        pprint(y_train)
+        # print('y - Train :')
+        # pprint(y_train)
 
         # print('X - test :')
         # pprint(X_test)
