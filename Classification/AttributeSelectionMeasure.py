@@ -51,6 +51,32 @@ def entropy_attribute(dataset: pd.DataFrame, class_label_column, attribute):
     return entropy_attr
 
 
+
+def entropy_attribute_cont(dataset: pd.DataFrame, class_label_column, attribute):
+    attr_col = dataset[attribute].sort_values()
+
+    min_entropy = float('inf')
+    split_pt = 0
+    # print(attr_col)
+
+    for i in range(len(attr_col) - 1):
+        mid_pt = (attr_col.iloc[i] + attr_col.iloc[i + 1]) / 2
+
+        d1 = dataset[dataset[attribute] <= mid_pt]
+        d2 = dataset[dataset[attribute] > mid_pt]
+
+        e1 = entropy(d1,class_label_column)
+        e2 = entropy(d2,class_label_column)
+
+        _entropy = ((d1.shape[0] / dataset_size) * e1) + ((d2.shape[0] / dataset_size) * e2)
+
+        if _entropy < min_entropy:
+            min_entropy = _entropy
+            split_pt = mid_pt
+
+    return min_entropy, split_pt
+
+
 def gain(dataset: pd.DataFrame, class_label_column, attribute):
     _gain = entropy(dataset, class_label_column) - entropy_attribute(dataset, class_label_column, attribute)
 
@@ -118,9 +144,10 @@ def gini_cont(dataset: pd.DataFrame, class_label_column, attribute):
 
     min_gini = float('inf')
     split_pt = 0
+    # print(attr_col)
 
     for i in range(len(attr_col) - 1):
-        mid_pt = (attr_col[i] + attr_col[i + 1]) / 2
+        mid_pt = (attr_col.iloc[i] + attr_col.iloc[i + 1]) / 2
 
         d1 = dataset[dataset[attribute] <= mid_pt]
         d2 = dataset[dataset[attribute] > mid_pt]
@@ -137,7 +164,7 @@ def gini_cont(dataset: pd.DataFrame, class_label_column, attribute):
     return min_gini, split_pt
 
 
-def selct_attr_gini_cont(dataset: pd.DataFrame, class_label_column):
+def selct_attr_cont(dataset: pd.DataFrame, class_label_column, selection_measure='entropy'):
     attr_cols = list(dataset.columns)
     attr_cols.remove(class_label_column)
 
@@ -146,8 +173,11 @@ def selct_attr_gini_cont(dataset: pd.DataFrame, class_label_column):
     spl_attr = None
 
     for attr in attr_cols:
-        mn_g, spl_pt = gini_cont(dataset, class_label_column, attr)
-        print('Attr :', attr, 'Gini :',mn_g, 'Split Pt:', spl_pt)
+        if selection_measure == 'entropy':
+            mn_g, spl_pt = gini_cont(dataset, class_label_column, attr)
+        else:
+            mn_g, spl_pt = entropy_attribute_cont(dataset, class_label_column, attr)
+            # print('Attr :', attr, 'Gini :',mn_g, 'Split Pt:', spl_pt)
 
         if mn_g < min_gini:
             min_gini = mn_g
