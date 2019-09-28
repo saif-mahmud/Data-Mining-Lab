@@ -137,7 +137,7 @@ def calculate_accuracy(predictions: list, class_labels: list):
 
 
 if __name__ == '__main__':
-    data = load_dataset('Dataset/Iris/iris.data')
+    data = load_dataset('Dataset/Chess_II/krkopt.data')
     # shuffle    ``
     data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
@@ -148,7 +148,7 @@ if __name__ == '__main__':
     acc_list = []
 
     print('dataset size', len(data))
-    class_label_column = 4
+    class_label_column = 6
     iris_numeric_cols = [0,1,2,3]
     for i in range(k):
         # print(begin_index, end_index)
@@ -158,8 +158,8 @@ if __name__ == '__main__':
         train_frame = data.drop(data.iloc[begin_index:end_index + 1].index).reset_index(drop=True)
         # print(len(train_frame))
         dt = DecisionTree()
-        dt.fit(train_frame, numeric_col_list=iris_numeric_cols, class_label_column=class_label_column)
-        # dt.print_tree()
+        dt.fit(train_frame, numeric_col_list=[], class_label_column=class_label_column)
+        dt.print_tree()
         preds = dt.predict(test_frame)
         acc = calculate_accuracy(preds, list(test_labels))
         acc_list.append(acc)

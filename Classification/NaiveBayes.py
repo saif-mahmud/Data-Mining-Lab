@@ -1,3 +1,4 @@
+import timeit
 from pprint import pprint
 
 import numpy as np
@@ -5,9 +6,18 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import StratifiedKFold
 
+from sklearn.preprocessing import LabelEncoder
+
+from sklearn.metrics import classification_report
+
+from sklearn.naive_bayes import GaussianNB
+
 
 def load_dataset(file: str, class_label_column):
     dataset = pd.read_csv(file, header=None)
+
+    print('Dataset Size :', dataset.shape[0])
+    print('# of Attributes :', dataset.shape[1] - 1)
 
     feature_columns = list(dataset.columns.values)
     feature_columns.remove(class_label_column)
@@ -71,7 +81,7 @@ def gaussian_distribution(x, mean, std):
 def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, categorical: list):
     cls_prob, cond_prob = train(X_train, y_train, categorical)
 
-    pprint(cls_prob)
+    # pprint(cls_prob)
 
     # print('Posterior Probability : ')
     # pprint(cond_prob)
@@ -117,6 +127,7 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 if __name__ == '__main__':
     X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
+
     # pprint(X)
     # print(type(X[0]))
 
@@ -131,6 +142,7 @@ if __name__ == '__main__':
     # print('Gauss :', gaussian_distribution(35, 30, 8.287))
 
     cls_prob, cond_prob = train(X, y, categorical)
+    # gnb = GaussianNB()
 
     # pprint(cond_prob)
 
@@ -152,6 +164,13 @@ if __name__ == '__main__':
         # print('X - test :')
         # pprint(X_test)
 
+        start = timeit.default_timer()
         y_pred = predict(X_train, y_train, X_test, categorical)
+        # _y_pred = gnb.fit(X_train, y_train).predict(X_test)
+        stop = timeit.default_timer()
 
-        print('Acc :', accuracy_score(y_test, y_pred))
+        print('Acc [Raw] :', accuracy_score(y_test, y_pred))
+        # print('Acc [Scikit] :', accuracy_score(y_test, _y_pred))
+        cls_label = np.unique(y_test)
+        print(classification_report(y_test, y_pred, target_names=cls_label))
+        print('Time: ', stop - start, " seconds\n")
