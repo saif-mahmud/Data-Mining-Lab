@@ -2,20 +2,22 @@ from pprint import pprint
 
 import pandas as pd
 
-from AttributeSelectionMeasure import load_dataset, entropy_attribute, entropy_attribute_cont
+from AttributeSelectionMeasure import load_dataset, entropy_attribute, entropy_attribute_cont, gini_attribute, gini_cont
 
 
 class DecisionTree:
-    def __init__(self, is_binary=False):
+    def __init__(self, attr_selection_measure='entropy', is_binary=False):
         self.decision_tree = None
         self.majority = None
+        self.attr_selection_measure = attr_selection_measure
         self.is_binary = is_binary
         self.numeric_cols = list()
 
-    def fit(self, dataset: pd.DataFrame, numeric_col_list:list, class_label_column):
+    def fit(self, dataset: pd.DataFrame, class_label_column,numeric_col_list:list=[]):
         self.majority = dataset[class_label_column].mode()[0]
         self.numeric_cols = numeric_col_list
-        if len(numeric_col_list) == dataset.shape[1] -1:
+        self
+        if len(numeric_col_list) == dataset.shape[1] -1 or self.attr_selection_measure == 'ginni' :
             self.is_binary = True
         self.decision_tree = self._train_recursive(dataset, class_label_column)
 
@@ -28,8 +30,16 @@ class DecisionTree:
 
         if tree is None:
             tree = {}
-            tree[(spl_attr, spl_pt)] = dict()
-        
+            if self.attr_selection_measure == 'ginni':
+                if spl_attr is None:
+                    return self.majority
+                if type(spl_pt) is list:
+                    tree[(spl_attr, tuple(spl_pt[0]))] = dict()
+                else:
+                    tree[(spl_attr, spl_pt)] = dict()
+            else:
+                tree[(spl_attr, spl_pt)] = dict()
+
         if spl_attr in self.numeric_cols:
             d1 = dataset[dataset[spl_attr] < spl_pt]
             d2 = dataset[dataset[spl_attr] >= spl_pt]
@@ -41,16 +51,29 @@ class DecisionTree:
                 self._assign_node(d2,spl_attr,'ge', tree,spl_pt=spl_pt)
             return tree
 
+        elif self.attr_selection_measure == 'ginni':
+            g1 = list(spl_pt[0])
+            # print(spl_attr,g1)
+            d1 = pd.DataFrame()
+            for value in g1:
+                dt = dataset[dataset[spl_attr] == value]
+                d1 = pd.concat([d1,dt])
+            d2 = dataset.drop(d1.index)
+            # print(dataset.shape,d1.shape,d2.shape)
+            if d1.shape[0] == 0 or d2.shape[0] == 0:
+                tree[(spl_attr,spl_pt)] = dataset[class_label_column].mode()[0]
+            else:
+                self._assign_node(d1,spl_attr,'in', tree,spl_pt=tuple(spl_pt[0]))
+                self._assign_node(d2,spl_attr,'out', tree,spl_pt=tuple(spl_pt[0]))
+            return tree
+
         else:
             attr_values = dataset[spl_attr].unique()
             for val in attr_values:
                 data_partition = dataset[dataset[spl_attr] == val]
                 data_partition = data_partition.drop(columns=[spl_attr])  # remove the splitting attribute
-                if data_partition.shape[0] == 0:
+                if (data_partition.shape[0] == 0) or (data_partition.shape[1] == 1):
                     tree[(spl_attr,spl_pt)][val] = data_partition[class_label_column].mode()[0]
-                elif data_partition.shape[1] == 1:
-                    tree[(spl_attr,spl_pt)][val] = data_partition[class_label_column].mode()[0]
-                    # print('empty')
                 else:
                     self._assign_node(data_partition,spl_attr,val, tree)  
             return tree
@@ -76,9 +99,9 @@ class DecisionTree:
         return preds
 
     def predict_single(self, row, dt: dict = None):
-        if self.is_binary:
-            for (key,pt) in dt:
-                val = row[key]
+        for (key,pt) in dt:
+            val = row[key]
+            if key in self.numeric_cols:
                 dt = dt[(key,pt)]
                 if ('l' not in dt) and ('ge' not in dt):
                     dt = dt['_']
@@ -90,14 +113,18 @@ class DecisionTree:
                     pred = self.predict_single(row, dt)
                 else:
                     pred = dt
-            return pred
-        else:
-            for (key,tp) in dt:
-                val = row[key]
-                if val not in dt[(key,tp)]:
-                    pred = self.majority
-                    continue
-                dt = dt[(key,tp)][val]
+            else:
+                if self.attr_selection_measure == 'ginni':
+                    l1= pt
+                    if val in l1:
+                        dt = dt[(key,pt)]['in']
+                    else:
+                        dt = dt[(key,pt)]['out']    
+                else:
+                    if val not in dt[(key,pt)]:
+                        pred = self.majority
+                        continue
+                    dt = dt[(key,pt)][val]
                 if type(dt) is dict:
                     pred = self.predict_single(row, dt)
                 else:
@@ -112,16 +139,24 @@ class DecisionTree:
         splitting_attr = None
         splitting_pt = None
         for col in attr_cols:
-            if col in self.numeric_cols:
-                attr_measure_val, pt = entropy_attribute_cont(dataset,class_label_column,col)
+            if self.attr_selection_measure == 'entropy':
+                if col in self.numeric_cols:
+                    attr_measure_val, pt = entropy_attribute_cont(dataset,class_label_column,col)
+                else:
+                    attr_measure_val,pt = entropy_attribute(dataset,class_label_column,col), '_'
             else:
-                attr_measure_val,pt = entropy_attribute(dataset,class_label_column,col), '_'
+                if col in self.numeric_cols:
+                    attr_measure_val, pt = gini_cont(dataset,class_label_column,col)
+                else:
+                    attr_measure_val,pt = gini_attribute(dataset,class_label_column,col)
+
             if attr_measure_val < min_measure_val:
                 splitting_attr = col
                 min_measure_val = attr_measure_val
                 splitting_pt = pt
 
         return splitting_pt,splitting_attr
+
 
     def print_tree(self):
         pprint(self.decision_tree)
@@ -137,18 +172,18 @@ def calculate_accuracy(predictions: list, class_labels: list):
 
 
 if __name__ == '__main__':
-    data = load_dataset('Dataset/Chess_II/krkopt.data')
-    # shuffle    ``
+    data = load_dataset('Dataset/BreastCancer/breast-cancer.data')
+    # shuffle
     data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
-    k = 10
+    k = 5
     fold_size = data.shape[0] // k
     begin_index = 0
     end_index = begin_index + fold_size
     acc_list = []
 
     print('dataset size', len(data))
-    class_label_column = 6
+    class_label_column = 0
     iris_numeric_cols = [0,1,2,3]
     for i in range(k):
         # print(begin_index, end_index)
@@ -157,17 +192,18 @@ if __name__ == '__main__':
         test_frame.drop(columns=class_label_column, inplace=True)
         train_frame = data.drop(data.iloc[begin_index:end_index + 1].index).reset_index(drop=True)
         # print(len(train_frame))
-        dt = DecisionTree()
-        dt.fit(train_frame, numeric_col_list=[], class_label_column=class_label_column)
-        dt.print_tree()
+        dt = DecisionTree(attr_selection_measure='ginni')
+        dt.fit(train_frame, class_label_column=class_label_column)
+        # dt.print_tree()
         preds = dt.predict(test_frame)
         acc = calculate_accuracy(preds, list(test_labels))
         acc_list.append(acc)
-        print()
+        print(acc)
         begin_index = end_index + 1
         if i == k - 2:
             end_index = data.shape[0] - 1
         else:
             end_index = end_index + fold_size
-    print(acc_list)
-    print(pd.Series(acc_list).mean())
+    print()
+    print('accuracy for the folds: ', acc_list)
+    print("Average Accuracy: ", pd.Series(acc_list).mean())

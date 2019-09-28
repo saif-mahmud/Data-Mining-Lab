@@ -129,7 +129,7 @@ def gini_attribute(dataset: pd.DataFrame, class_label_column, attribute):
 
             # print('GINI_ATTR :', _gini_attr)
 
-            if _gini_attr < min_gini:
+            if _gini_attr <= min_gini:
                 min_gini = _gini_attr
                 splitting_attr = [d1, d2]
 
@@ -194,6 +194,6 @@ if __name__ == '__main__':
     print(gini(data, class_label_column=4))
     print()
 
-    spl_attr, spl_pt = selct_attr_gini_cont(data, class_label_column=4)
+    # spl_attr, spl_pt = selct_attr_gini_cont(data, class_label_column=4)
 
-    print(spl_attr, spl_pt)
+    # print(spl_attr, spl_pt)
