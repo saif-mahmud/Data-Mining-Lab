@@ -1,16 +1,10 @@
 import timeit
-from pprint import pprint
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import StratifiedKFold
-
-from sklearn.preprocessing import LabelEncoder
-
 from sklearn.metrics import classification_report
-
-from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import StratifiedKFold
 
 
 def load_dataset(file: str, class_label_column):
@@ -37,8 +31,8 @@ def compute_probability_distribution(y: np.ndarray):
     return prob_dict
 
 
-def separate_class(X: np.ndarray, y: np.ndarray):
-    cls_split = {}
+def groupby_class(X: np.ndarray, y: np.ndarray):
+    cls_split = dict()
     cls_tuples = dict()
 
     for label in np.unique(y):
@@ -49,16 +43,23 @@ def separate_class(X: np.ndarray, y: np.ndarray):
 
 
 def feature_extraction(cls_tups: dict, categorical: list):
-    attr_dict = dict.fromkeys(cls_tups.keys())
-    attr_val = dict()
+    # print('==================================')
+    # print('Feature Extraction')
+    # print('==================================')
+
+    attr_dict = dict()
+    for label in cls_tups.keys():
+        attr_dict[label] = {}
+    # pprint(attr_dict)
 
     for label, features in cls_tups.items():
+        # print('Label :', label)
         for i in range(len(features[0])):
             if categorical[i]:
-                attr_val[i] = compute_probability_distribution(features[:, i])
+                attr_dict[label][i] = compute_probability_distribution(features[:, i])
+                # print(attr_dict[label][i])
             else:
-                attr_val[i] = {'mean': np.mean(features[:, i]), 'std': np.std(features[:, i])}
-        attr_dict[label] = attr_val
+                attr_dict[label][i] = {'mean': np.mean(features[:, i]), 'std': np.std(features[:, i])}
 
     return attr_dict
 
@@ -66,7 +67,10 @@ def feature_extraction(cls_tups: dict, categorical: list):
 def train(X: np.ndarray, y: np.ndarray, categorical: list):
     cls_probs = compute_probability_distribution(y)
 
-    cls_tups = separate_class(X, y)
+    cls_tups = groupby_class(X, y)
+    # print('Cls tups :')
+    # pprint(cls_tups)
+
     attr_dick = feature_extraction(cls_tups, categorical)
 
     return cls_probs, attr_dick
@@ -81,6 +85,7 @@ def gaussian_distribution(x, mean, std):
 def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, categorical: list):
     cls_prob, cond_prob = train(X_train, y_train, categorical)
 
+    # print('Class Probability')
     # pprint(cls_prob)
 
     # print('Posterior Probability : ')
@@ -93,27 +98,30 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
         # pprint(test_data_feature)
 
         max_prob = -float('inf')
+        # print('Max Prob [init] :', max_prob)
         pred_class = None
+        # print('Pred Class [init] :', pred_class)
 
         for label in cls_prob.keys():
 
             prior_prob = cls_prob[label]
+            posterior_prob = 1.0
 
-            posterior_prob = 1
             for idx in range(len(test_data_feature)):
                 if categorical[idx]:
                     if test_data_feature[idx] in cond_prob[label][idx].keys():
                         posterior_prob *= cond_prob[label][idx][test_data_feature[idx]]
                     else:
                         cls_cnt = np.count_nonzero(y_train == label)
-                        uniq_cnt = np.unique(y)
-                        posterior_prob *= (1 / (cls_cnt + len(uniq_cnt) + 1))
+                        uniq_cnt = len(cond_prob[label][idx].keys())
+                        posterior_prob *= (1 / (cls_cnt + uniq_cnt + 1))
                 else:
                     posterior_prob *= gaussian_distribution(test_data_feature[idx], cond_prob[label][idx]['mean'],
                                                             cond_prob[label][idx]['std'])
 
+            # print('Posterior Probability [', label, '] :', posterior_prob)
             bayes_prob = prior_prob * posterior_prob
-            # print('P(', label, ') * P(X|', label, ') :', bayes_prob)
+            # print('P(', test_data_feature, '|', label, ') :', bayes_prob)
 
             if bayes_prob > max_prob:
                 max_prob = bayes_prob
@@ -126,12 +134,13 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
+    X, y = load_dataset('Classification/Dataset/Chess/kr-vs-kp.data', class_label_column=36)
 
     # pprint(X)
     # print(type(X[0]))
 
-    num_idx = [0, 2, 4, 10, 11, 12]
+    num_idx = []
+    # [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 
     for idx in range(len(categorical)):
@@ -169,8 +178,11 @@ if __name__ == '__main__':
         # _y_pred = gnb.fit(X_train, y_train).predict(X_test)
         stop = timeit.default_timer()
 
+        print('--------------------------------------------')
         print('Acc [Raw] :', accuracy_score(y_test, y_pred))
+        print('--------------------------------------------')
         # print('Acc [Scikit] :', accuracy_score(y_test, _y_pred))
         cls_label = np.unique(y_test)
         print(classification_report(y_test, y_pred, target_names=cls_label))
         print('Time: ', stop - start, " seconds\n")
+        print('============================================')
