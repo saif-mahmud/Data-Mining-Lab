@@ -5,13 +5,14 @@ import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
+from tabulate import tabulate
 
 
 def load_dataset(file: str, class_label_column):
     dataset = pd.read_csv(file, header=None)
 
-    print('Dataset Size :', dataset.shape[0])
-    print('# of Attributes :', dataset.shape[1] - 1)
+    print(tabulate([['Dataset Size', dataset.shape[0]], ['# of Attributes', dataset.shape[1] - 1]], tablefmt='grid',
+                   headers=['Dataset Summary', file]))
 
     feature_columns = list(dataset.columns.values)
     feature_columns.remove(class_label_column)
@@ -43,21 +44,14 @@ def groupby_class(X: np.ndarray, y: np.ndarray):
 
 
 def feature_extraction(cls_tups: dict, categorical: list):
-    # print('==================================')
-    # print('Feature Extraction')
-    # print('==================================')
-
     attr_dict = dict()
     for label in cls_tups.keys():
         attr_dict[label] = {}
-    # pprint(attr_dict)
 
     for label, features in cls_tups.items():
-        # print('Label :', label)
         for i in range(len(features[0])):
             if categorical[i]:
                 attr_dict[label][i] = compute_probability_distribution(features[:, i])
-                # print(attr_dict[label][i])
             else:
                 attr_dict[label][i] = {'mean': np.mean(features[:, i]), 'std': np.std(features[:, i])}
 
@@ -66,10 +60,7 @@ def feature_extraction(cls_tups: dict, categorical: list):
 
 def train(X: np.ndarray, y: np.ndarray, categorical: list):
     cls_probs = compute_probability_distribution(y)
-
     cls_tups = groupby_class(X, y)
-    # print('Cls tups :')
-    # pprint(cls_tups)
 
     attr_dick = feature_extraction(cls_tups, categorical)
 
@@ -85,6 +76,12 @@ def gaussian_distribution(x, mean, std):
 def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, categorical: list):
     cls_prob, cond_prob = train(X_train, y_train, categorical)
 
+    tab = []
+    for label, prob in cls_prob.items():
+        tab.append([label, prob])
+
+    print(tabulate(tab, tablefmt='psql', headers=['Class Label', 'Probability Distribution']))
+
     # print('Class Probability')
     # pprint(cls_prob)
 
@@ -98,9 +95,7 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
         # pprint(test_data_feature)
 
         max_prob = -float('inf')
-        # print('Max Prob [init] :', max_prob)
         pred_class = None
-        # print('Pred Class [init] :', pred_class)
 
         for label in cls_prob.keys():
 
@@ -134,10 +129,7 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/Chess/kr-vs-kp.data', class_label_column=36)
-
-    # pprint(X)
-    # print(type(X[0]))
+    X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
 
     num_idx = []
     # [0, 2, 4, 10, 11, 12]
@@ -148,19 +140,21 @@ if __name__ == '__main__':
             categorical[idx] = False
 
     # print(categorical)
-    # print('Gauss :', gaussian_distribution(35, 30, 8.287))
 
     cls_prob, cond_prob = train(X, y, categorical)
     # gnb = GaussianNB()
-
-    # pprint(cond_prob)
 
     skf = StratifiedKFold(n_splits=5, shuffle=True)
     skf.get_n_splits(X, y)
 
     # print(skf)
 
+    k = 0
+
     for train_index, test_index in skf.split(X, y):
+        print('\n\n\n')
+        k = k + 1
+
         X_train, X_test = X[train_index], X[test_index]
         y_train, y_test = y[train_index], y[test_index]
 
@@ -178,11 +172,11 @@ if __name__ == '__main__':
         # _y_pred = gnb.fit(X_train, y_train).predict(X_test)
         stop = timeit.default_timer()
 
-        print('--------------------------------------------')
-        print('Acc [Raw] :', accuracy_score(y_test, y_pred))
-        print('--------------------------------------------')
+        print(tabulate([['Accuracy (%)', accuracy_score(y_test, y_pred) * 100.0], ['Time Elapsed (Sec)', stop - start]],
+                       tablefmt='grid',
+                       headers=['k-Fold Cross Validation', k]))
+
         # print('Acc [Scikit] :', accuracy_score(y_test, _y_pred))
         cls_label = np.unique(y_test)
         print(classification_report(y_test, y_pred, target_names=cls_label))
-        print('Time: ', stop - start, " seconds\n")
-        print('============================================')
+        print('=============================================================')
