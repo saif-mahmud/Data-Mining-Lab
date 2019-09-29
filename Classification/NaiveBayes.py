@@ -3,6 +3,7 @@ import timeit
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
+from sklearn.metrics import classification_report
 from sklearn.model_selection import StratifiedKFold
 from tabulate import tabulate
 
@@ -128,9 +129,9 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/Poker/poker-hand-testing.data', class_label_column=10)
+    X, y = load_dataset('Classification/Dataset/CensusIncome/census-income.data', class_label_column=41)
 
-    num_idx = []
+    num_idx = [0, 5, 16, 17, 18, 24, 30, 39]
     # [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 
@@ -143,7 +144,7 @@ if __name__ == '__main__':
     cls_prob, cond_prob = train(X, y, categorical)
     # gnb = GaussianNB()
 
-    skf = StratifiedKFold(n_splits=10, shuffle=True)
+    skf = StratifiedKFold(n_splits=5, shuffle=True)
     skf.get_n_splits(X, y)
 
     # print(skf)
@@ -182,5 +183,5 @@ if __name__ == '__main__':
         #         y_test[i] = str(y_test[i])
 
         cls_label = list(np.unique(y_test))
-        # print(classification_report(y_test, y_pred, target_names=cls_label))
+        print(classification_report(y_test, y_pred, target_names=cls_label))
         print('=====================================================')
