@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
     # print(skf)
 
-    k = 0
+    k = 5
 
     for train_index, test_index in skf.split(X, y):
         print('\n\n\n')
