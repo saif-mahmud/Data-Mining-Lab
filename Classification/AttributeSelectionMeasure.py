@@ -1,5 +1,6 @@
 import math
 from itertools import combinations
+from tabulate import tabulate
 
 import numpy as np
 import pandas as pd
@@ -10,6 +11,9 @@ def load_dataset(filename: str):
 
     global dataset_size
     dataset_size = df.shape[0]
+
+    print(tabulate([['Dataset Size', dataset_size], ['# of Attributes', df.shape[1] - 1]], tablefmt='grid',
+                   headers=['Dataset Summary', filename]))
 
     return df
 
@@ -57,9 +61,11 @@ def entropy_attribute_cont(dataset: pd.DataFrame, class_label_column, attribute)
 
     min_entropy = float('inf')
     split_pt = 0
-    # print(attr_col)
+    # print(len(attr_col.unique()))
 
     for i in range(len(attr_col) - 1):
+        if attr_col.iloc[i] == attr_col.iloc[i + 1]:
+            continue
         mid_pt = (attr_col.iloc[i] + attr_col.iloc[i + 1]) / 2
 
         d1 = dataset[dataset[attribute] <= mid_pt]
@@ -147,6 +153,8 @@ def gini_cont(dataset: pd.DataFrame, class_label_column, attribute):
     # print(attr_col)
 
     for i in range(len(attr_col) - 1):
+        if attr_col.iloc[i] == attr_col.iloc[i + 1]:
+            continue
         mid_pt = (attr_col.iloc[i] + attr_col.iloc[i + 1]) / 2
 
         d1 = dataset[dataset[attribute] <= mid_pt]
@@ -162,30 +170,6 @@ def gini_cont(dataset: pd.DataFrame, class_label_column, attribute):
             split_pt = mid_pt
 
     return min_gini, split_pt
-
-
-def selct_attr_cont(dataset: pd.DataFrame, class_label_column, selection_measure='entropy'):
-    attr_cols = list(dataset.columns)
-    attr_cols.remove(class_label_column)
-
-    min_gini = float('inf')
-    best_spl_pt = 0
-    spl_attr = None
-
-    for attr in attr_cols:
-        if selection_measure == 'entropy':
-            mn_g, spl_pt = gini_cont(dataset, class_label_column, attr)
-        else:
-            mn_g, spl_pt = entropy_attribute_cont(dataset, class_label_column, attr)
-            # print('Attr :', attr, 'Gini :',mn_g, 'Split Pt:', spl_pt)
-
-        if mn_g < min_gini:
-            min_gini = mn_g
-
-            best_spl_pt = spl_pt
-            spl_attr = attr
-
-    return spl_attr, best_spl_pt
 
 
 if __name__ == '__main__':
