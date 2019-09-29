@@ -131,9 +131,10 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Dataset/PenDigits/pendigits.tra', class_label_column=16)
+    X, y = load_dataset('Classification/Dataset/BreastCancerWisconsin/breast-cancer-wisconsin.data',
+                        class_label_column=9)
 
-    num_idx = list(range(0, 16))
+    num_idx = [0]
     categorical = [True] * len(X[0])
 
     for idx in range(len(categorical)):

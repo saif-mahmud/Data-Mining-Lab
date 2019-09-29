@@ -25,6 +25,8 @@
 \usepackage{cite}
 \usepackage{url}
 \usepackage{multirow}
+\usepackage{longtable}
+\usepackage{multirow}
 %\usepackage[a4paper]{geometry}
 \newcommand{\s}{\vspace{0.2cm}}
 \usepackage{float}
@@ -57,8 +59,84 @@
 
 \section{Result}
 
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{Dataset}                     & \textbf{Dataset Size}   & \textbf{\begin{tabular}[c]{@{}c@{}}k-Fold Cross Validation\\ (k = 5) Accuracy (\%)\end{tabular}} & \textbf{Avg. Accuracy (\%)} \\ \hline
+		\multirow{5}{*}{Adult}               & \multirow{5}{*}{32561}  & 82.9879                                                                                          & \multirow{5}{*}{83.35124}   \\ \cline{3-3}
+		&                         & 83.2463                                                                                          &                             \\ \cline{3-3}
+		&                         & 83.4459                                                                                          &                             \\ \cline{3-3}
+		&                         & 83.6302                                                                                          &                             \\ \cline{3-3}
+		&                         & 83.4459                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Breast Cancer}       & \multirow{5}{*}{286}    & 86.2069                                                                                          & \multirow{5}{*}{73.38174}   \\ \cline{3-3}
+		&                         & 82.4561                                                                                          &                             \\ \cline{3-3}
+		&                         & 64.9123                                                                                          &                             \\ \cline{3-3}
+		&                         & 64.9123                                                                                          &                             \\ \cline{3-3}
+		&                         & 68.4211                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Census-Income}       & \multirow{5}{*}{199523} & 85.6939                                                                                          & \multirow{5}{*}{85.57612}   \\ \cline{3-3}
+		&                         & 85.255                                                                                           &                             \\ \cline{3-3}
+		&                         & 85.5654                                                                                          &                             \\ \cline{3-3}
+		&                         & 85.8235                                                                                          &                             \\ \cline{3-3}
+		&                         & 85.5428                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Chess}               & \multirow{5}{*}{3196}   & 89.8438                                                                                          & \multirow{5}{*}{87.63982}   \\ \cline{3-3}
+		&                         & 86.25                                                                                            &                             \\ \cline{3-3}
+		&                         & 88.1064                                                                                          &                             \\ \cline{3-3}
+		&                         & 88.7324                                                                                          &                             \\ \cline{3-3}
+		&                         & 85.2665                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Chess - II}          & \multirow{5}{*}{28056}  & 36.2989                                                                                          & \multirow{5}{*}{36.2274}    \\ \cline{3-3}
+		&                         & 36.545                                                                                           &                             \\ \cline{3-3}
+		&                         & 36.1255                                                                                          &                             \\ \cline{3-3}
+		&                         & 36.3361                                                                                          &                             \\ \cline{3-3}
+		&                         & 35.8315                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Connect-4}           & \multirow{5}{*}{67557}  & 72.1137                                                                                          & \multirow{5}{*}{72.15832}   \\ \cline{3-3}
+		&                         & 72.7353                                                                                          &                             \\ \cline{3-3}
+		&                         & 72.2617                                                                                          &                             \\ \cline{3-3}
+		&                         & 71.7786                                                                                          &                             \\ \cline{3-3}
+		&                         & 71.9023                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Credit Card Default} & \multirow{5}{*}{30000}  & 67.2055                                                                                          & \multirow{5}{*}{65.12984}   \\ \cline{3-3}
+		&                         & 70.4167                                                                                          &                             \\ \cline{3-3}
+		&                         & 53.0167                                                                                          &                             \\ \cline{3-3}
+		&                         & 73.2167                                                                                          &                             \\ \cline{3-3}
+		&                         & 61.7936                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Iris}                & \multirow{5}{*}{150}    & 93.3333                                                                                          & \multirow{5}{*}{95.33334}   \\ \cline{3-3}
+		&                         & 90                                                                                               &                             \\ \cline{3-3}
+		&                         & 96.6667                                                                                          &                             \\ \cline{3-3}
+		&                         & 96.6667                                                                                          &                             \\ \cline{3-3}
+		&                         & 100                                                                                              &                             \\ \hline
+	\end{tabular}
+\end{table}
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
+\begin{table}[]
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		\textbf{Dataset}           & \textbf{Dataset Size}    & \textbf{\begin{tabular}[c]{@{}c@{}}k-Fold Cross Validation\\ (k = 5) Accuracy (\%)\end{tabular}} & \textbf{Avg. Accuracy (\%)} \\ \hline
+		\multirow{5}{*}{Mushroom}  & \multirow{5}{*}{8124}    & 95.326                                                                                           & \multirow{5}{*}{95.37192}   \\ \cline{3-3}
+		&                          & 95.0154                                                                                          &                             \\ \cline{3-3}
+		&                          & 94.4                                                                                             &                             \\ \cline{3-3}
+		&                          & 95.6281                                                                                          &                             \\ \cline{3-3}
+		&                          & 96.4901                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Pendigits} & \multirow{5}{*}{7494}    & 78.7333                                                                                          & \multirow{5}{*}{78.0755}    \\ \cline{3-3}
+		&                          & 78.6                                                                                             &                             \\ \cline{3-3}
+		&                          & 77.7333                                                                                          &                             \\ \cline{3-3}
+		&                          & 77.5183                                                                                          &                             \\ \cline{3-3}
+		&                          & 77.7926                                                                                          &                             \\ \hline
+		\multirow{5}{*}{Poker}     & \multirow{5}{*}{1000000} & 50.119                                                                                           & \multirow{5}{*}{50.1187}    \\ \cline{3-3}
+		&                          & 50.114                                                                                           &                             \\ \cline{3-3}
+		&                          & 50.12                                                                                            &                             \\ \cline{3-3}
+		&                          & 50.1205                                                                                          &                             \\ \cline{3-3}
+		&                          & 50.12                                                                                            &                             \\ \hline
+		
+		\multirow{5}{*}{\begin{tabular}[c]{@{}c@{}}Breast Cancer - \\ Wisconsin\end{tabular}} & \multirow{5}{*}{699}  & 65.035                                                                                           & \multirow{5}{*}{62.78208}   \\ \cline{3-3}
+		&                       & 63.8298                                                                                          &                             \\ \cline{3-3}
+		&                       & 62.4113                                                                                          &                             \\ \cline{3-3}
+		&                       & 60.8696                                                                                          &                             \\ \cline{3-3}
+		&                       & 61.7647                                                                                          &                             \\ \hline
+	\end{tabular}
+\end{table}
 
 \section{Discussion}
-  
 
 \end{document}
