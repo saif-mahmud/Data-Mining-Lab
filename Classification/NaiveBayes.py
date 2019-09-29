@@ -129,9 +129,9 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/CreditCardDefault/defaultCreditCardClients.csv', class_label_column=23)
+    X, y = load_dataset('Classification/Dataset/PenDigits/pendigits.tra', class_label_column=16)
 
-    num_idx = [0, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    num_idx = list(range(0, 16))
     # [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 

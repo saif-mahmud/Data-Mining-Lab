@@ -6,4 +6,5 @@ Iris    [0, 1, 2, 3]    4
 Mushroom    []  0
 Connect4    []  42
 CensusIncome  [0, 5, 16, 17, 18, 24, 30, 39]  41
-CreditCardDefault [0, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]   23
+CreditCardDefault   [0, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]   23
+PenDigit    list(range(0, 16))  16
