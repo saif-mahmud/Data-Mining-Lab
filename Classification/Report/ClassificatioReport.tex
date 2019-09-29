@@ -38,6 +38,8 @@
 \newpage
 
 \section{Problem Definition}
+In this experiment, we have implemented two different classification algorithms, namely Decision tree and Naive Bayes. The algorithms utilize discrete and continuous features to predict class labels. Comparative analysis of these two algorithms have been conducted using various evaluation metrics for both balanced and imbalanced datasets of varied sizes.
+
 
 
 
@@ -49,7 +51,7 @@
 
 \section{Experimental Setup}
 \subsection{Implementation}
-
+For the implementation of decision tree, two different attribute selection methods (entropy and Gini index) have been used for both discrete and continuous attributes and is available as option for training models. hen there is a large number of distinct values for a continuous attribute, the training time increases significantly due to the fact that all possible splitting points have to be considered. The tree is stored using a dictionary structure in python and built recursively. Prepruning of the tree based on a threshold given as input has been used to prevent over-fitting.
 
 \subsection{Datasets}
 
@@ -59,6 +61,6 @@
 
 
 \section{Discussion}
-  
+  Both of these algorithms produce reasonable performance when dealing with moderate sized datasets with close to balanced class distribution. However, in case of class imbalance, both of thee algorithms suffer.
 
 \end{document}
