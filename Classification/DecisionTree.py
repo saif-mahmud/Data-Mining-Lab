@@ -191,21 +191,17 @@ def calculate_accuracy(predictions: list, class_labels: list):
     return 100 * (correct / t_len)
 
 
-if __name__ == '__main__':
-    data = load_dataset('Dataset/Iris/iris.data')
+def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, k):
+    data = load_dataset(dataset)
     # shuffle
     data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
-    k = 10
+    
     fold_size = data.shape[0] // k
     begin_index = 0
     end_index = begin_index + fold_size
     acc_list = []
 
-    class_label_column = 4
-    iris_numeric_cols = [0,1,2,3]
-    anneal_numeric_cols = [3, 4, 8, 32, 33, 34]
-    # adult_numeric_cols = [0,2,4,10,11,12]
     for i in range(k):
         # print(begin_index, end_index)
         test_frame = data[begin_index:end_index + 1].reset_index(drop=True)
@@ -214,7 +210,7 @@ if __name__ == '__main__':
         train_frame = data.drop(
             data.iloc[begin_index:end_index + 1].index).reset_index(drop=True)
         # print(len(train_frame))
-        dt = DecisionTree()
+        dt = DecisionTree(attr_sl)
         start = timeit.default_timer()
         dt.fit(train_frame, class_label_column=class_label_column,numeric_col_list=iris_numeric_cols, prune_threshold=0.05)
         stop = timeit.default_timer()
@@ -239,3 +235,16 @@ if __name__ == '__main__':
     
     print('\nk-fold cross validation (Accuracy Measure)')
     print(tabulate(accs, headers=['k', 'Accuracy'], tablefmt='grid'))
+
+
+if __name__ == '__main__':
+    class_label_column = 4
+    iris_numeric_cols = [0,1,2,3]
+    anneal_numeric_cols = [3, 4, 8, 32, 33, 34]
+    # adult_numeric_cols = [0,2,4,10,11,12]
+
+    k = 10
+    
+    attr_sl = 'entropy'
+
+    run_k_fold('Dataset/Iris/iris.data', attr_sl, class_label_column, iris_numeric_cols, k)
