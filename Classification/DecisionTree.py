@@ -5,6 +5,7 @@ import math
 import timeit
 
 from tabulate import tabulate
+from sklearn.metrics import classification_report
 
 from AttributeSelectionMeasure import load_dataset, entropy_attribute, entropy_attribute_cont, gini_attribute, gini_cont
 
@@ -191,7 +192,7 @@ def calculate_accuracy(predictions: list, class_labels: list):
     return 100 * (correct / t_len)
 
 
-def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, k):
+def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, prune_threshold, k=10):
     data = load_dataset(dataset)
     # shuffle
     data = data.sample(frac=1).reset_index(drop=True)
@@ -201,6 +202,8 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, k):
     begin_index = 0
     end_index = begin_index + fold_size
     acc_list = []
+    tr_time =[]
+    tt_time = []
 
     for i in range(k):
         # print(begin_index, end_index)
@@ -212,18 +215,24 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, k):
         # print(len(train_frame))
         dt = DecisionTree(attr_sl)
         start = timeit.default_timer()
-        dt.fit(train_frame, class_label_column=class_label_column,numeric_col_list=iris_numeric_cols, prune_threshold=0.05)
+        dt.fit(train_frame, class_label_column=class_label_column,numeric_col_list=numeric_cols, prune_threshold=prune_threshold)
         stop = timeit.default_timer()
-        print('k=', i+1, ',training time: ', stop-start, 'second')
+        tr_time.append(stop-start)
+        # print('k=', i+1, ',training time: ', stop-start, 'second')
         # dt.print_tree()
 
         start = timeit.default_timer()
         preds = dt.predict(test_frame)
         stop = timeit.default_timer()
-        print('Average inference time: ', 1000*((stop-start)/test_frame.shape[0]),'millisecond')
+        # print('Average inference time: ', 1000*((stop-start)/test_frame.shape[0]),'millisecond')
+        tt_time.append(1000*((stop-start)/test_frame.shape[0]))
 
         acc = calculate_accuracy(preds, list(test_labels))
         acc_list.append(acc)
+
+        cls_label = list(test_labels.unique())
+        print('fold: ', i+1)
+        print(classification_report(test_labels, preds, target_names=cls_label))
 
         begin_index = end_index + 1
         if i == k - 2:
@@ -235,10 +244,12 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, k):
     
     print('\nk-fold cross validation (Accuracy Measure)')
     print(tabulate(accs, headers=['k', 'Accuracy'], tablefmt='grid'))
+    print('average training time: ', pd.Series(tr_time).mean(), 'second')
+    print('Average inference time: (per tuple)', pd.Series(tt_time).mean(),'millisecond')
 
 
 if __name__ == '__main__':
-    class_label_column = 4
+    class_label_column = 0
     iris_numeric_cols = [0,1,2,3]
     anneal_numeric_cols = [3, 4, 8, 32, 33, 34]
     # adult_numeric_cols = [0,2,4,10,11,12]
@@ -246,5 +257,6 @@ if __name__ == '__main__':
     k = 10
     
     attr_sl = 'entropy'
+    prune_threshold= None
 
-    run_k_fold('Dataset/Iris/iris.data', attr_sl, class_label_column, iris_numeric_cols, k)
+    run_k_fold('Dataset/Mushroom/agaricus-lepiota.data', attr_sl, class_label_column, [],prune_threshold, k)
