@@ -131,10 +131,9 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
+    X, y = load_dataset('Dataset/PenDigits/pendigits.tra', class_label_column=16)
 
-    num_idx = [0, 2, 4, 10, 11, 12]
-    # [0, 2, 4, 10, 11, 12]
+    num_idx = list(range(0, 16))
     categorical = [True] * len(X[0])
 
     for idx in range(len(categorical)):
@@ -178,9 +177,9 @@ if __name__ == '__main__':
                        tablefmt='grid',
                        headers=['k-Fold Cross Validation', k]))
 
-        cls_label = list(np.unique(y_test))
-        print(classification_report(y_test, y_pred, target_names=cls_label))
+        # cls_label = list(np.unique(y_test))
+        print(classification_report(y_test, y_pred))
 
         print('\nConfusion Matrix')
-        pprint(confusion_matrix(y_test, y_pred, labels=cls_label))
+        pprint(confusion_matrix(y_test, y_pred))
         print('=====================================================')
