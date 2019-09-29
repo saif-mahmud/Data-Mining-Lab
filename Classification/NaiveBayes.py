@@ -1,9 +1,11 @@
 import timeit
+from pprint import pprint
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 from tabulate import tabulate
 
@@ -129,9 +131,9 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/PenDigits/pendigits.tra', class_label_column=16)
+    X, y = load_dataset('Classification/Dataset/Adult/adult.data', class_label_column=14)
 
-    num_idx = list(range(0, 16))
+    num_idx = [0, 2, 4, 10, 11, 12]
     # [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 
@@ -176,12 +178,9 @@ if __name__ == '__main__':
                        tablefmt='grid',
                        headers=['k-Fold Cross Validation', k]))
 
-        # print('Acc [Scikit] :', accuracy_score(y_test, _y_pred))
-        # for i in range(len(y_pred)):
-        #     if type(y_pred) != str:
-        #         y_pred[i] = str(y_pred[i])
-        #         y_test[i] = str(y_test[i])
-
         cls_label = list(np.unique(y_test))
-        print(classification_report(y_test, y_pred))
+        print(classification_report(y_test, y_pred, target_names=cls_label))
+
+        print('\nConfusion Matrix')
+        pprint(confusion_matrix(y_test, y_pred, labels=cls_label))
         print('=====================================================')
