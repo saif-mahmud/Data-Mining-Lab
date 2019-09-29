@@ -129,9 +129,9 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/CensusIncome/census-income.data', class_label_column=41)
+    X, y = load_dataset('Classification/Dataset/CreditCardDefault/defaultCreditCardClients.csv', class_label_column=23)
 
-    num_idx = [0, 5, 16, 17, 18, 24, 30, 39]
+    num_idx = [0, 4, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
     # [0, 2, 4, 10, 11, 12]
     categorical = [True] * len(X[0])
 
@@ -149,7 +149,7 @@ if __name__ == '__main__':
 
     # print(skf)
 
-    k = 5
+    k = 0
 
     for train_index, test_index in skf.split(X, y):
         print('\n\n\n')
@@ -183,5 +183,5 @@ if __name__ == '__main__':
         #         y_test[i] = str(y_test[i])
 
         cls_label = list(np.unique(y_test))
-        print(classification_report(y_test, y_pred, target_names=cls_label))
+        print(classification_report(y_test, y_pred))
         print('=====================================================')
