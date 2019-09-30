@@ -1,11 +1,9 @@
 import timeit
-from pprint import pprint
 
 import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
-from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import StratifiedKFold
 from tabulate import tabulate
 
@@ -23,6 +21,24 @@ def load_dataset(file: str, class_label_column):
     y = dataset.iloc[:, class_label_column].values
 
     return X, y
+
+
+def clf_report(y_true, y_pred):
+    support = {}
+    for i in range(len(y_pred)):
+        if y_pred[i] == y_true[i]:
+            if y_true[i] not in support:
+                support[y_true[i]] = 0
+            else:
+                support[y_true[i]] += 1
+
+    y_true = pd.Series(y_true)
+    y_pred = pd.Series(y_pred)
+    for label, sup_count in support.items():
+        precision = sup_count / len(y_pred[y_pred == label])
+        recall = sup_count / len(y_true[y_true == label])
+        f1 = 2 * precision * recall / (precision + recall)
+        print(label, 'precision:', precision, 'recall:', recall, 'f1: ', f1)
 
 
 def compute_probability_distribution(y: np.ndarray):
@@ -131,10 +147,10 @@ def predict(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, catego
 
 
 if __name__ == '__main__':
-    X, y = load_dataset('Classification/Dataset/BreastCancerWisconsin/breast-cancer-wisconsin.data',
-                        class_label_column=9)
+    X, y = load_dataset('Classification/Dataset/Connect4/connect-4.data',
+                        class_label_column=42)
 
-    num_idx = [0]
+    num_idx = []
     categorical = [True] * len(X[0])
 
     for idx in range(len(categorical)):
@@ -144,7 +160,6 @@ if __name__ == '__main__':
     # print(categorical)
 
     cls_prob, cond_prob = train(X, y, categorical)
-    # gnb = GaussianNB()
 
     skf = StratifiedKFold(n_splits=5, shuffle=True)
     skf.get_n_splits(X, y)
@@ -171,16 +186,16 @@ if __name__ == '__main__':
 
         start = timeit.default_timer()
         y_pred = predict(X_train, y_train, X_test, categorical)
-        # _y_pred = gnb.fit(X_train, y_train).predict(X_test)
         stop = timeit.default_timer()
 
         print(tabulate([['Accuracy (%)', accuracy_score(y_test, y_pred) * 100.0], ['Time Elapsed (Sec)', stop - start]],
                        tablefmt='grid',
                        headers=['k-Fold Cross Validation', k]))
 
-        # cls_label = list(np.unique(y_test))
-        print(classification_report(y_test, y_pred))
+        cls_label = list(np.unique(y_test))
+        print(classification_report(y_test, y_pred, target_names=cls_label))
 
-        print('\nConfusion Matrix')
-        pprint(confusion_matrix(y_test, y_pred))
+        # clf_report(y_test, y_pred)
+        # print('\nConfusion Matrix')
+        # pprint(confusion_matrix(y_test, y_pred))
         print('=====================================================')

@@ -85,10 +85,10 @@ class DecisionTree:
                     columns=[spl_attr])  # remove the splitting attribute
                 if data_partition.shape[0] == 0:
                     tree[(spl_attr, spl_pt)
-                         ][val] = dataset[class_label_column].mode()[0]
+                    ][val] = dataset[class_label_column].mode()[0]
                 elif data_partition.shape[1] == 1:
                     tree[(spl_attr, spl_pt)
-                         ][val] = data_partition[class_label_column].mode()[0]
+                    ][val] = data_partition[class_label_column].mode()[0]
                 else:
                     self._assign_node(data_partition, spl_attr, val, tree)
             return tree
@@ -100,7 +100,7 @@ class DecisionTree:
             # print('pure class')
         elif data_partition.shape[0] < self.prune_threshold_count:
             tree[(spl_attr, spl_pt)
-                 ][attr_val] = data_partition[class_label_column].mode()[0]
+            ][attr_val] = data_partition[class_label_column].mode()[0]
         else:
             # recursion
             tree[(spl_attr, spl_pt)][attr_val] = self._train_recursive(
@@ -196,7 +196,7 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, prune_thresho
     # shuffle
     data = data.sample(frac=1).reset_index(drop=True)
     data = data.reset_index(drop=True)
-    
+
     fold_size = data.shape[0] // k
     begin_index = 0
     end_index = begin_index + fold_size
@@ -239,9 +239,9 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, prune_thresho
             end_index = data.shape[0] - 1
         else:
             end_index = end_index + fold_size
-    accs = [[i+1, acc_list[i]]  for i in range(k)]
+    accs = [[i + 1, acc_list[i]] for i in range(k)]
     accs.append(['Average', pd.Series(acc_list).mean()])
-    
+
     print('\nk-fold cross validation (Accuracy Measure)')
     print(tabulate(accs, headers=['k', 'Accuracy'], tablefmt='grid'))
     print('average training time: ', pd.Series(tr_time).mean(), 'second')
@@ -250,12 +250,11 @@ def run_k_fold(dataset, attr_sl, class_label_column, numeric_cols, prune_thresho
 
 if __name__ == '__main__':
     class_label_column = 0
-    iris_numeric_cols = [0,1,2,3]
-    anneal_numeric_cols = [3, 4, 8, 32, 33, 34]
-    # adult_numeric_cols = [0,2,4,10,11,12]
+    # iris_numeric_cols = [0, 1, 2, 3]
+    # anneal_numeric_cols = [3, 4, 8, 32, 33, 34]
 
     k = 10
-    
+
     attr_sl = 'entropy'
     prune_threshold = None
 

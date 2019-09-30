@@ -1,9 +1,9 @@
 import math
 from itertools import combinations
-from tabulate import tabulate
 
 import numpy as np
 import pandas as pd
+from tabulate import tabulate
 
 
 def load_dataset(filename: str):
@@ -55,7 +55,6 @@ def entropy_attribute(dataset: pd.DataFrame, class_label_column, attribute):
     return entropy_attr
 
 
-
 def entropy_attribute_cont(dataset: pd.DataFrame, class_label_column, attribute):
     attr_col = dataset[attribute].sort_values()
 
@@ -71,8 +70,8 @@ def entropy_attribute_cont(dataset: pd.DataFrame, class_label_column, attribute)
         d1 = dataset[dataset[attribute] <= mid_pt]
         d2 = dataset[dataset[attribute] > mid_pt]
 
-        e1 = entropy(d1,class_label_column)
-        e2 = entropy(d2,class_label_column)
+        e1 = entropy(d1, class_label_column)
+        e2 = entropy(d2, class_label_column)
 
         _entropy = ((d1.shape[0] / dataset_size) * e1) + ((d2.shape[0] / dataset_size) * e2)
 
