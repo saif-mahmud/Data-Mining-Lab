@@ -61,9 +61,6 @@ The goal of any probabilistic classifier is, with features $ x_0 $ through $ x_n
 
 $$ P(A \mid B) = \frac{P(B \mid A) \, P(A)}{P(B)} $$
 
-\subsection{K - Fold Cross Validation}
-In k-fold cross-validation, the initial data are randomly partitioned into k mutually exclusive subsets or `folds', $ D_1 $ , $ D_2 $ , . . . , $ D_k $ , each of approximately equal size. Training and testing is performed k times. In iteration i, partition $ D_i $ is reserved as the test set, and the remaining partitions are collectively used to train the model. That is, in the first iteration, subsets $ D_2 $ , . . . , $ D_k $ collectively serve as the training set to obtain a first model, which is tested on $ D_1 $ ; the second iteration is trained on subsets $ D_1 $ , $ D_3 $ , . . . , $ D_k $ and tested on $ D_2 $ ; and so on. Unlike the holdout and random subsampling methods, here each sample is used the same number of times for training and once for testing. For classification, the accuracy estimate is the overall number of correct classifications from the k iterations, divided by the total number of tuples in the initial data.
-
 \section{Experimental Setup}
 \subsection{Implementation}
 For the implementation of decision tree, two different attribute selection methods (entropy and Gini index) have been used for both discrete and continuous attributes and is available as option for training models. hen there is a large number of distinct values for a continuous attribute, the training time increases significantly due to the fact that all possible splitting points have to be considered. The tree is stored using a dictionary structure in python and built recursively. Prepruning of the tree based on a threshold given as input has been used to prevent over-fitting.
@@ -73,6 +70,10 @@ In case of implementing Naive Bayes classifier, the prior and posterior probabil
 
  
 \section{Result}
+\subsection{K - Fold Cross Validation}
+In k-fold cross-validation, the initial data are randomly partitioned into k mutually exclusive subsets or `folds', $ D_1 $ , $ D_2 $ , . . . , $ D_k $ , each of approximately equal size. Training and testing is performed k times. In iteration i, partition $ D_i $ is reserved as the test set, and the remaining partitions are collectively used to train the model. That is, in the first iteration, subsets $ D_2 $ , . . . , $ D_k $ collectively serve as the training set to obtain a first model, which is tested on $ D_1 $ ; the second iteration is trained on subsets $ D_1 $ , $ D_3 $ , . . . , $ D_k $ and tested on $ D_2 $ ; and so on. Unlike the holdout and random subsampling methods, here each sample is used the same number of times for training and once for testing. For classification, the accuracy estimate is the overall number of correct classifications from the k iterations, divided by the total number of tuples in the initial data.
+
+
 \subsection{Evaluation Metric}
 The standard accuracy metric defined in (\ref{eqn:accuracy}) is used to evaluate the models used in this experiment.
 
@@ -81,7 +82,9 @@ The standard accuracy metric defined in (\ref{eqn:accuracy}) is used to evaluate
 Accuracy = \frac{TP + TN}{TP + TN + FP + FN}
 \end{equation} 
 
-where, TP, TN, FP and FN are defined as True Positive, True Negative, False Positive and False Negative respectively. In this regard, true positive rate (TPR) or Recall or Sensitivity is defined as per the expression defined in (\ref{eqn:tpr}).
+where, TP, TN, FP and FN are defined as True Positive, True Negative, False Positive and False Negative respectively.
+
+However, true positive rate (TPR) or Recall or Sensitivity is defined as per the expression defined in (\ref{eqn:tpr}) and can be considered as a measure of completeness
 
 \begin{equation}
 \label{eqn:tpr}
@@ -101,7 +104,20 @@ Specificity = \frac{TN}{TN + FP}
 \label{eqn:fpr}
 FPR = 1 - Specificity
 = \frac{TP}{TP + FN}
-\end{equation} 
+\end{equation}
+
+Precision can be thought of as a measure of exactness which is specified in \ref{eqn:prec}. 
+\begin{equation}
+\label{eqn:prec}
+Precision = \frac{TP}{TP + FP}
+\end{equation}
+
+The approach of F-measure combines the score of precision and recall through computing their harmonic mean. If both precision and recall are given equal weight, then the evaluation metric is defined as $ F_1 Score $ which is specified in \ref{eqn:f1}. 
+\begin{equation}
+\label{eqn:f1}
+F_1-Score = \frac{2 * Precision * Recall}{Precision + Recall}
+\end{equation}
+
 
 \begin{table}[H]
 	\caption{Accuracy : Decision Tree}
@@ -255,11 +271,41 @@ FPR = 1 - Specificity
 	\label{fig:comparison}
 \end{figure}
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = .8\columnwidth, height = 7.5cm]{Connect4.png}
+	\caption{Comparison of Decision Tree and Naive Bayes - Connect 4 Dataset [5 fold]}
+	\label{fig:connect4}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = .8\columnwidth, height = 7.5cm]{Mushroom.png}
+	\caption{Comparison of Decision Tree and Naive Bayes - Mushroom Dataset [5 fold]}
+	\label{fig:mushroom}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = .8\columnwidth, height = 7.5cm]{Precision.png}
+	\caption{Comparison of Precision in Decision Tree and Naive Bayes - Breast Cancer Dataset [5 fold]}
+	\label{fig:prec}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = .8\columnwidth, height = 7.5cm]{Recall.png}
+	\caption{Comparison of Recall in Decision Tree and Naive Bayes - Breast Cancer Dataset [5 fold]}
+	\label{fig:rec}
+\end{figure}
+
 
 \section{Discussion}
 Both of these algorithms produce reasonable performance when dealing with moderate sized datasets with close to balanced class distribution. However, in case of class imbalance, both of thee algorithms suffer. The insights we have obtained through the experiment on aforementioned classification algorithm is given below:
 
 \begin{itemize}
+	\item Decision Tree in not dependent on the statistical distribution of training data which is the opposite case in Naive Bayes Classifier. Thus, if test and train set belongs to the same statistical distribution, then Naive Bayes performs slightly better in the aforementioned k-fold cross validation data. 
+	
 	\item In case of highly imabalanced dataset with very few positive or negative example, the classifier overfits the dominant class in most of the cases. Therefore, we can see in Figure \ref{fig:BreastCancerWisconsin} that only the dominant class has been detected correctly in the diagonal position with very few precise classification for the scarce class labels.
 
 
@@ -281,12 +327,17 @@ Both of these algorithms produce reasonable performance when dealing with modera
 
 \item With balanced distribution of multiple classes and reasonable amount of training tuples representing dataset size, the classification algorithms performs reasonably well which is evident in the diagonal entries of Figure \ref{fig:pendigit}.
 
+\item Decision Tree is prone to outlier and hence tree pruning step mitigates the problem of overfitting. On the other hand, no overfitting elimination technique has been devised in the case of classic Naive Bayes Classifier.
+
 \begin{figure}[H]
 	\centering
 	\includegraphics[width = .7\columnwidth, height = 7.5cm]{PenDigit.png}
 	\caption{Confusion Matrix - PenDigit}
 	\label{fig:pendigit}
 \end{figure}
+
+\item Decision tree is a discriminative model, whereas Naive Bayes is a generative model. Decision tree pruning may neglect some key values in training data, which can lead the accuracy to a loss.
+
 \end{itemize}
 
 \end{document}
