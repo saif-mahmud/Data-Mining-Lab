@@ -12,9 +12,12 @@ def load_dataset(file: str, exclude_cols: list, sep=','):
     return data_pt
 
 
+<<<<<<< HEAD
 def compute_dist(pt1: np.ndarray, pt2: np.ndarray):
     return np.sqrt(np.sum((pt1 - pt2) ** 2))
 
 
+=======
+>>>>>>> master
 if __name__ == '__main__':
     print(load_dataset('Dataset/buddymove_holidayiq.csv', [0]))
