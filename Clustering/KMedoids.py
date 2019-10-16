@@ -1,5 +1,6 @@
-import numpy as np
 from copy import deepcopy
+
+import numpy as np
 from tabulate import tabulate
 
 
@@ -13,23 +14,23 @@ def load_dataset(file: str, exclude_cols: list, sep=','):
     return data_pt
 
 
-def get_distance(pt1: np.ndarray, pt2: np.ndarray, manhattan=True):
+def get_distance(pt1: np.ndarray, pt2: np.ndarray, manhattan=False):
     if manhattan:
         return np.sum(np.abs(pt1 - pt2), axis=-1)
-    return np.sqrt(np.sum((pt1 - pt2) ** 2))
+    return np.sqrt(np.sum((pt1 - pt2) ** 2, axis=-1))
 
 
 def init_meloid(data_pt: np.ndarray, k: int):
-    centroid_idx = np.random.randint(low=0, high=data_pt.shape[0]+1, size=k)
+    centroid_idx = np.random.randint(low=0, high=data_pt.shape[0] + 1, size=k)
 
     return centroid_idx
 
 
-def get_cluster_assignment_with_cost(data:np.ndarray, k: int, medoid_idx):
+def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx):
     medoids = data[medoid_idx]
     # print(medoids)
     dist = np.array([get_distance(data, m) for m in medoids])
-    cluster_assignment = np.argmin(dist,axis=0)
+    cluster_assignment = np.argmin(dist, axis=0)
     # print(dist.shape)
     # print(cluster_assignment.shape)
 
@@ -38,11 +39,11 @@ def get_cluster_assignment_with_cost(data:np.ndarray, k: int, medoid_idx):
     return cluster_assignment, cost
 
 
-def k_medoids(data:np.ndarray, k: int, max_iter=1000):
+def k_medoids(data: np.ndarray, k: int, max_iter=1000):
     n_sample, n_feat = data.shape
     medoid_idx = init_meloid(data_pt, k)
 
-    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data,k,medoid_idx)
+    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx)
     print('init---', 'medoids', medoid_idx, 'cost', old_cost)
 
     for _it in range(max_iter):
@@ -54,7 +55,7 @@ def k_medoids(data:np.ndarray, k: int, max_iter=1000):
                 new_medoid_idx = deepcopy(medoid_idx)
                 new_medoid_idx[swap_pos] = n
 
-                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data,k,new_medoid_idx)
+                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data, k, new_medoid_idx)
 
                 if new_cost < old_cost:
                     print('swapped', medoid_idx[swap_pos], 'with', n)
@@ -65,10 +66,10 @@ def k_medoids(data:np.ndarray, k: int, max_iter=1000):
         if swap_flag is False:
             print('medoids', data[medoid_idx])
             print(cluster_assignment)
+            print(np.unique(cluster_assignment, return_counts=True))
             print('end')
             break
         print('iteration', _it, 'medoids', medoid_idx, 'cost', old_cost)
-
 
 
 if __name__ == '__main__':
@@ -78,4 +79,4 @@ if __name__ == '__main__':
     # print(get_distance(data_pt[0:5,:],data_pt[1,:]))
     # print(get_distance(data_pt[0,:],data_pt[1,:],manhattan=False))
 
-    k_medoids(data_pt,4)
+    k_medoids(data_pt, 4)
