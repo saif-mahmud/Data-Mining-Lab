@@ -1,4 +1,4 @@
-from pprint import pprint
+import timeit
 
 import numpy as np
 from tabulate import tabulate
@@ -56,7 +56,6 @@ def k_means(data_pt: np.ndarray, k: int):
 
     while True:
         i = i + 1
-        print('Iteration -', i)
 
         clusters = {label: [] for label in range(k)}
         for data_idx in range(data_pt.shape[0]):
@@ -71,15 +70,21 @@ def k_means(data_pt: np.ndarray, k: int):
 
         centroids = update_centroid(data_pt, clusters)
 
-        for title, indices in clusters.items():
-            print(title, ':', len(indices))
+        table = []
 
-        print('\n')
+        for title, indices in clusters.items():
+            table.append([title, len(indices)])
+
+        print('\nIteration -', i)
+        print(tabulate(table, headers=['Cluster', '# of Members'], tablefmt="fancy_grid"))
 
 
 if __name__ == '__main__':
     data_pt = load_dataset('Dataset/buddymove_holidayiq.csv', exclude_cols=[0])
 
     # print(data_pt)
+    start = timeit.default_timer()
     k_means(data_pt, k=4)
-    pprint('---###---')
+    stop = timeit.default_timer()
+
+    print('\nTotal Time Elepsed (Sec) :', stop - start)
