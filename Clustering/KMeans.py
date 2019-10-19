@@ -3,6 +3,8 @@ import timeit
 import numpy as np
 from tabulate import tabulate
 
+from Visualize import Cluster_viz
+
 
 def load_dataset(file: str, exclude_cols: list, sep=','):
     data_pt = np.genfromtxt(file, delimiter=sep, skip_header=1)
@@ -49,18 +51,23 @@ def update_centroid(data_pt: np.ndarray, clusters: dict):
     return centroids_updated
 
 
-def k_means(data_pt: np.ndarray, k: int):
+def k_means(data_pt: np.ndarray, k: int, visualize=False):
     centroids = data_pt[init_centroid(data_pt, k)]
 
     i = 0
 
+    if visualize:
+        viz = Cluster_viz(data_pt)
+
     while True:
         i = i + 1
 
+        _clusters = np.zeros(data_pt.shape[0])
         clusters = {label: [] for label in range(k)}
         for data_idx in range(data_pt.shape[0]):
             min_idx = cluster_assignment(data_pt, data_idx, centroids, clusters)
             clusters[min_idx].append(data_idx)
+            _clusters[data_idx] = min_idx
 
         # print(centroids)
         # print(update_centroid(data_pt, clusters))
@@ -77,6 +84,8 @@ def k_means(data_pt: np.ndarray, k: int):
 
         print('\nIteration -', i)
         print(tabulate(table, headers=['Cluster', '# of Members'], tablefmt="fancy_grid"))
+        if visualize:
+            viz.visualize_iteration(i , _clusters)
 
 
 if __name__ == '__main__':
@@ -84,7 +93,7 @@ if __name__ == '__main__':
 
     # print(data_pt)
     start = timeit.default_timer()
-    k_means(data_pt, k=4)
+    k_means(data_pt, k=4, visualize=True)
     stop = timeit.default_timer()
 
     print('\nTotal Time Elepsed (Sec) :', stop - start)
