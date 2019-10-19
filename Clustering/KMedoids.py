@@ -52,7 +52,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, visualize=False):
     cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx)
     print('init---', 'medoids', medoid_idx, 'cost', old_cost)
     if visualize:
-        viz.visualize_iteration(-1 , cluster_assignment)
+        viz.visualize_iteration(0 , cluster_assignment)
 
     for _it in range(max_iter):
         swap_flag = False
@@ -72,7 +72,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, visualize=False):
                     old_cost = new_cost
                     cluster_assignment = _new_cluster_assignment
         if visualize:
-            viz.visualize_iteration(_it , cluster_assignment)
+            viz.visualize_iteration(_it+1, cluster_assignment)
         if swap_flag is False:
             print('medoids', data[medoid_idx])
             # print(cluster_assignment)

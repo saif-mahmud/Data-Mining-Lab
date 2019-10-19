@@ -12,7 +12,9 @@ class Cluster_viz:
 
     def visualize_iteration(self, iteration,cluster_assignment):
         plt.scatter(self.pca_data[:,0], self.pca_data[:,1], c=cluster_assignment)
-        # plt.title('Iteration', iteration)
-        plt.show()
+        plt.title('Iteration ' + str(iteration))
+        plt.show(block=False)
+        plt.pause(1)
+        # plt.close()
 
 
