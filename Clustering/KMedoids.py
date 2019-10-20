@@ -6,9 +6,12 @@ from tabulate import tabulate
 from Visualize import Cluster_viz
 
 
-def load_dataset(file: str, exclude_cols: list, sep=','):
+def load_dataset(file: str, exclude_cols: list, exclude_rows:list, sep=','):
     data_pt = np.genfromtxt(file, delimiter=sep, skip_header=1)
     data_pt = np.delete(data_pt, obj=exclude_cols, axis=1)
+    data_pt = np.delete(data_pt, obj=exclude_rows, axis=0)
+    #replace nan with mean of column
+    data_pt = np.where(np.isnan(data_pt), np.ma.array(data_pt, mask=np.isnan(data_pt)).mean(axis=0), data_pt)
 
     print(tabulate([['Dataset Size', data_pt.shape[0]], ['Instance Dimension', data_pt.shape[1]]], tablefmt='grid',
                    headers=['Dataset Summary', file]))
@@ -16,7 +19,7 @@ def load_dataset(file: str, exclude_cols: list, sep=','):
     return data_pt
 
 
-def get_distance(pt1: np.ndarray, pt2: np.ndarray, manhattan=False):
+def get_distance(pt1: np.ndarray, pt2: np.ndarray, manhattan=True):
     if manhattan:
         return np.sum(np.abs(pt1 - pt2), axis=-1)
     return np.sqrt(np.sum((pt1 - pt2) ** 2, axis=-1))
@@ -85,10 +88,10 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, visualize=False):
 
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/buddymove_holidayiq.csv', exclude_cols=[0])
+    data_pt = load_dataset('Dataset/google_review_ratings.csv', exclude_cols=[0], exclude_rows=[0])
 
     # print(data_pt[0:5,:]-data_pt[1,:])
     # print(get_distance(data_pt[0:5,:],data_pt[1,:]))
     # print(get_distance(data_pt[0,:],data_pt[1,:],manhattan=False))
 
-    k_medoids(data_pt, 4, visualize=True)
+    k_medoids(data_pt, 5, visualize=True)
