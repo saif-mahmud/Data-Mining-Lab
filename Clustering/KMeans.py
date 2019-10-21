@@ -78,14 +78,16 @@ def k_means(data_pt: np.ndarray, k: int, visualize=False):
         if visualize:
             viz.visualize_iteration(i, _clusters)
 
+    return centroids, clusters
+
 
 if __name__ == '__main__':
     # data_pt = load_dataset('Dataset/wine.data', exclude_cols=[0])
-    data_pt = load_dataset('Dataset/google_review_ratings.csv', exclude_cols=[0], exclude_rows=[0])
+    data_pt = load_dataset('Dataset/buddymove_holidayiq.csv', exclude_cols=[0], exclude_rows=[0])
 
     # print(data_pt)
     start = timeit.default_timer()
-    k_means(data_pt, k=5, visualize=True)
+    centroids, clusters = k_means(data_pt, k=5, visualize=True)
     stop = timeit.default_timer()
 
     print('\nTotal Time Elepsed (Sec) :', stop - start)
