@@ -3,14 +3,14 @@ from copy import deepcopy
 import numpy as np
 from tabulate import tabulate
 
-from Visualize import Cluster_viz
+from Visualization import Cluster_viz
 
 
-def load_dataset(file: str, exclude_cols: list, exclude_rows:list, sep=','):
+def load_dataset(file: str, exclude_cols: list, exclude_rows: list, sep=','):
     data_pt = np.genfromtxt(file, delimiter=sep, skip_header=1)
     data_pt = np.delete(data_pt, obj=exclude_cols, axis=1)
     data_pt = np.delete(data_pt, obj=exclude_rows, axis=0)
-    #replace nan with mean of column
+    # replace nan with mean of column
     data_pt = np.where(np.isnan(data_pt), np.ma.array(data_pt, mask=np.isnan(data_pt)).mean(axis=0), data_pt)
 
     print(tabulate([['Dataset Size', data_pt.shape[0]], ['Instance Dimension', data_pt.shape[1]]], tablefmt='grid',
@@ -39,7 +39,7 @@ def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx):
     # print(dist.shape)
     # print(cluster_assignment.shape)
 
-    min_dist = dist[cluster_assignment,np.arange(dist.shape[1])]
+    min_dist = dist[cluster_assignment, np.arange(dist.shape[1])]
     cost = np.sum(min_dist)
     # print(cost)
     return cluster_assignment, cost
@@ -55,7 +55,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, visualize=False):
     cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx)
     print('init---', 'medoids', medoid_idx, 'cost', old_cost)
     if visualize:
-        viz.visualize_iteration(0 , cluster_assignment)
+        viz.visualize_iteration(0, cluster_assignment)
 
     for _it in range(max_iter):
         swap_flag = False
@@ -75,16 +75,16 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, visualize=False):
                     old_cost = new_cost
                     cluster_assignment = _new_cluster_assignment
         if visualize:
-            viz.visualize_iteration(_it+1, cluster_assignment)
+            viz.visualize_iteration(_it + 1, cluster_assignment)
         if swap_flag is False:
             print('medoids', data[medoid_idx])
             # print(cluster_assignment)
-            cl, member_count =  np.unique(cluster_assignment, return_counts=True)
-            table= [[cl[i],member_count[i]] for i in range(len(cl))]
+            cl, member_count = np.unique(cluster_assignment, return_counts=True)
+            table = [[cl[i], member_count[i]] for i in range(len(cl))]
             print(tabulate(table, headers=['Cluster', '# of Members'], tablefmt="fancy_grid"))
             print('end')
             break
-        print('iteration', _it+1, 'medoids', medoid_idx, 'cost', old_cost)
+        print('iteration', _it + 1, 'medoids', medoid_idx, 'cost', old_cost)
 
 
 if __name__ == '__main__':
