@@ -30,10 +30,10 @@ def init_meloid(data_pt: np.ndarray, k: int):
     return centroid_idx
 
 
-def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx):
+def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx, use_abs_error):
     medoids = data[medoid_idx]
     # print(medoids)
-    dist = np.array([get_distance(data, m) for m in medoids])
+    dist = np.array([get_distance(data, m, use_abs_error) for m in medoids])
     cluster_assignment = np.argmin(dist, axis=0)
     # print(dist.shape)
     # print(cluster_assignment.shape)
@@ -44,28 +44,32 @@ def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx):
     return cluster_assignment, cost
 
 
-def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True,visualize=False):
+def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, use_abs_error= True, visualize=False):
     n_sample, n_feat = data.shape
-    medoid_idx = init_meloid(data_pt, k)
+    medoid_idx = init_meloid(data, k)
 
     if visualize:
         viz = Cluster_viz(data)
 
-    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx)
+    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx,use_abs_error)
     print('init---', 'medoids', medoid_idx, 'cost', old_cost)
     if visualize:
         viz.visualize_iteration(0, cluster_assignment)
 
     for _it in range(max_iter):
         swap_flag = False
-        for n in range(n_sample):
+        if clara:
+            samples = np.random.randint(low=0, high=n_sample, size=n_sample//sampling)
+        else:
+            samples = range(n_sample)
+        for n in samples:
             if n in medoid_idx:
                 continue
             for swap_pos in range(k):
                 new_medoid_idx = deepcopy(medoid_idx)
                 new_medoid_idx[swap_pos] = n
 
-                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data, k, new_medoid_idx)
+                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data, k, new_medoid_idx, use_abs_error)
 
                 if new_cost < old_cost:
                     # print('swapped', medoid_idx[swap_pos], 'with', n)
@@ -82,7 +86,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True,visualize=False)
             table = [[cl[i], member_count[i]] for i in range(len(cl))]
             print(tabulate(table, headers=['Cluster', '# of Members'], tablefmt="fancy_grid"))
             print('end')
-            break
+            return old_cost, medoid_idx
         print('iteration', _it + 1, 'medoids', medoid_idx, 'cost', old_cost)
 
 
