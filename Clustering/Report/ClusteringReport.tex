@@ -60,14 +60,14 @@ Such dataset may help segment the days into different categories which may corre
 \subsection{Google Review Ratings}
 This dataset includes reviews of different types of places from a number of visitors. Available in the UCI repository, this dataset may also help segment the visitors into groups similar to credit card dataset in subsection~\ref{credit}. The attributes contain ratings for different type of places.
 
-\subsection{London bike sharing dataset}
-This unsupervised dataset provides count of new bike shares grouped by hour of the day in London during the years 2015-2016. In addition, the remaining attributes contain information regarding weather(temperature, humidity), season and information like whether the day is a holiday or weekend. This may be used to cluster the different times of the day which may demonstrate a wide range of distinct usage patterns of bike sharing depending on the granularity of the segmentation.
+\subsection{Travel Reviews Data Set}
+This data set is populated by crawling TripAdvisor.com. Reviews on destinations in 10 categories mentioned across East Asia are considered. Each traveler rating is mapped as Excellent (4), Very Good (3), Average (2), Poor (1), and Terrible (0) and average rating is used against each category per user.
 
 \subsection{BuddyMove Data Set}
 Containing user interest information extracted from user reviews published in the website holidayiq.com, this data may also be used for user segmentation similar to the google review dataset. The attributes contain the number of reviews a user has posted about some particular place type e.g.  theatres or parks.
 
 \subsection{Summary}
-\begin{table}[h]
+\begin{table}[H]
 	\label{tab:data}
 	\caption{Dataset Statistics}
 	\centering
@@ -77,7 +77,7 @@ Containing user interest information extracted from user reviews published in th
 		Credit Card Unsupervised         & 8950                                                                            & 18 \\ \hline
 		Weather Madrid 1997 - 2015            & 6812                                                                            & 23 \\ \hline
 		Google Review Ratings           & 5456                                                                       & 24\\ \hline
-		London bike sharing dataset  & 17414                                                                           & 9\\ \hline
+		Travel Reviews Data Set  & 980                                                                           & 11\\ \hline
 		BuddyMove Data Set           & 250                                                                           & 6\\ \hline
 	\end{tabular}
 \end{table}
@@ -115,7 +115,9 @@ are tried out. This process continues until the quality of the resulting cluster
 
 \subsection{Elbow Method}
 
-\begin{figure}[H]
+The elbow method is based on the observation that increasing the number of clusters can help to reduce the sum of within-cluster variance of each cluster. This is because having more clusters allows one to capture finer groups of data objects that are more similar to each other. However, the marginal effect of reducing the sum of within-cluster variances may drop if too many clusters are formed, because splitting a cohesive cluster into two gives only a small reduction. Consequently, a heuristic for selecting the right number of clusters is to use the turning point in the curve of the sum of within-cluster variances with respect to the number of clusters.
+
+\begin{figure}[]
 	\centering
 	\begin{subfigure}{0.5\linewidth}
 		\includegraphics[scale=0.55]{Elbow_Weather.png}
@@ -130,7 +132,7 @@ are tried out. This process continues until the quality of the resulting cluster
 	\caption{Determining Value of K through Elbow Method}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[]
 	\centering
 	\includegraphics[width = 0.7\linewidth, height = 7cm]{Elbow_CreditCard.png}
 	\caption{Determining Value of K through Elbow Method (K - Means)}
@@ -185,31 +187,99 @@ are tried out. This process continues until the quality of the resulting cluster
 
 \subsection{Time Complexity Comparison}
 
-\begin{figure}[H]
+\begin{figure}[]
 	\centering
 	\includegraphics[width = 0.75\linewidth, height = 7cm]{Weather.png}
 	\caption{Comparison of Elapsed Time between K - Means and K - Medoids Algorithm}
 	\label{fig:weather}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[]
 	\centering
 	\includegraphics[width = 0.75\linewidth, height = 7cm]{Google.png}
 	\caption{Comparison of Elapsed Time between K - Means and K - Medoids Algorithm}
 	\label{fig:google}
 \end{figure}
 
-\begin{figure}[H]
+\begin{figure}[]
 	\centering
-	\includegraphics[width = \linewidth, height = 10.5cm]{CreditCard.png}
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{CreditCard.png}
 	\caption{Comparison of Elapsed Time between K - Means and K - Medoids Algorithm}
 	\label{fig:credit}
 \end{figure}
 
+\subsection{Cluster Evaluation}
 
+When the ground truth of a data set is not available, we have to use an intrinsic method to assess the clustering quality. In general, intrinsic methods evaluate a clustering by examining how well the clusters are separated and how compact the clusters are. Many intrinsic methods have the advantage of a similarity metric between objects in the data set. The silhouette coefficient is such a measure.
+
+The range of Silhouette score is $ [-1, 1] $. Its analysis is as follows:
+
+\begin{itemize}
+	\item +1 Score : Near +1 Silhouette score indicates that the sample is far away from its neighboring cluster.
+	
+	\item 0 Score : 0 Silhouette score indicates that the sample is on or very close to the decision boundary separating two neighboring clusters.
+	
+	\item -1 Score : 1 Silhouette score indicates that the samples have been assigned to the wrong clusters.   
+\end{itemize}
+
+The calculation of Silhouette score can be done by using the following formula:
+
+\begin{equation}
+Silhouette Score = \frac{(p - q)}{max(p,q)}
+\end{equation}
+
+
+Where,
+p = mean distance to the points in the nearest cluster,
+q = mean intra-cluster distance to all the points.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{eval_weather.png}
+	\caption{Intrinsic Evaluation of Cluster : Silhouette Score (K - Means)}
+	\label{fig:eval_w}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{eval_triadv.png}
+	\caption{Intrinsic Evaluation of Cluster : Silhouette Score (K - Means)}
+	\label{fig:eval_trip}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{eval_google.png}
+	\caption{Intrinsic Evaluation of Cluster : Silhouette Score (K - Means)}
+	\label{fig:eval_g}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{eval_credit.png}
+	\caption{Intrinsic Evaluation of Cluster : Silhouette Score (K - Means)}
+	\label{fig:eval_credit}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{eval_wine.png}
+	\caption{Extrinsic Evaluation of Cluster : Purity (K - Means)}
+	\label{fig:eval_credit}
+\end{figure}
+
+
+Within the context of cluster analysis, Purity is an external evaluation criterion of cluster quality. It is the percent of the total number of objects(data points) that were classified correctly, in the unit range $ [0, 1] $.
+
+\begin{equation}
+Purity = \frac 1 N \sum_{i=1}^k max_j | c_i \cap t_j |
+\end{equation}
+
+where $ N $ = number of objects (data points), $ k $ = number of clusters, $ c_i $ is a cluster in $ C $, and $ t_j $ is the classification which has the max count for cluster $ c_i $.
 
 \section{Conclusion}
-It can be concluded based on the experimental results that, K-medoids algoritm is more robust than K-means since it less affected less by outliers and noise. However, K-medoids much is costlier in terms of the time complexity especially if PAM implementation is used. I case of using CLARA, the size of the random sample is also a factor. Both of this algorithms have the limitation that the number of clusters need to be defined prior to running the algorithms.
+It can be concluded based on the experimental results that, K - Medoids algorithm is more robust than K-means since it less affected less by outliers and noise. However, K - Medoids much is costlier in terms of the time complexity especially if PAM implementation is used. In case of using CLARA, the size of the random sample is also a factor. Both of this algorithms have the limitation that the number of clusters need to be defined prior to running the algorithms.
 
 
 

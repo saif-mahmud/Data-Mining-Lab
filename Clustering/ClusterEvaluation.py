@@ -70,45 +70,51 @@ def elbow_method_kmedoid(data_pt: np.ndarray):
     return dict(zip(x_val, y_val))
 
 
-def time_comparison_graph(data_pt: np.ndarray):
+def time_comparison_graph(data_pt: np.ndarray, y_true: list):
     kmeans_time = list()
     kmedoids_time = list()
     x_val = list()
+
+    eval = list()
 
     for k in range(2, 11):
         x_val.append(k)
 
         start_kmeans = timeit.default_timer()
-        _, _ = k_means(data_pt, k=k, visualize=False)
+        # _, _, _ = k_means(data_pt, k=k, visualize=False)
         stop_kmeans = timeit.default_timer()
 
         elapsed_time_kmeans = stop_kmeans - start_kmeans
         kmeans_time.append(elapsed_time_kmeans)
 
         start_kmedoids = timeit.default_timer()
-        _, _ = k_medoids(data_pt, k=k, use_abs_error=False)
+        # _, _ = k_medoids(data_pt, k=k, use_abs_error=False)
         stop_kmedoids = timeit.default_timer()
 
         elapsed_time_kmedoids = stop_kmedoids - start_kmedoids
         kmedoids_time.append(elapsed_time_kmedoids)
 
+        eval.append(cluster_eval(data_pt, k, y_true, purity=True))
+
+    print(eval)
+
     # print(kmeans_time)
     # print(kmedoids_time)
 
-    plt.plot(x_val, kmeans_time, color='g', label='K - Means')
-    plt.plot(x_val, kmeans_time, 'or')
+    plt.plot(x_val, eval, color='g', label='Silhouette Score')
+    plt.plot(x_val, eval, 'or')
 
-    plt.plot(x_val, kmedoids_time, color='b', label='K - Medoids')
-    plt.plot(x_val, kmedoids_time, '^r')
+    # plt.plot(x_val, kmedoids_time, color='b', label='K - Medoids')
+    # plt.plot(x_val, kmedoids_time, '^r')
 
     plt.xlabel('Value of K')
-    plt.ylabel('Elapsed Time (Sec)')
+    plt.ylabel('Purity')
 
-    plt.legend()
-    plt.title('Dataset : Credit Card Unsupervised')
+    # plt.legend()
+    plt.title('Dataset : Wine')
 
+    plt.savefig('Report/eval_wine.png')
     plt.show()
-    # plt.savefig('weather.png')
 
 
 def cluster_eval(data_pt: np.ndarray, k: int, y_true: list, purity=False):
@@ -127,7 +133,12 @@ def cluster_eval(data_pt: np.ndarray, k: int, y_true: list, purity=False):
     print('\nSilhouette Score :', s)
 
     if purity:
+        p = purity_score(y_true, y_pred)
         print('Purity :', purity_score(y_true, y_pred))
+
+        return p
+
+    return s
 
 
 def purity_score(y_true, y_pred):
@@ -136,12 +147,11 @@ def purity_score(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[0], exclude_rows=[])
+    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[7], exclude_rows=[])
 
     # _elbow_data = elbow_method(data_pt)
     # elbow_method_kmedoid(data_pt)
 
-    # time_comparison_graph(data_pt)
-    _, _, y_pred = k_means(data_pt, k=3)
+    time_comparison_graph(data_pt, y_true)
 
-    cluster_eval(data_pt, 3, y_true)
+    # k = 4
