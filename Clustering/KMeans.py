@@ -83,7 +83,7 @@ def k_means(data_pt: np.ndarray, k: int, visualize=False):
 
 if __name__ == '__main__':
     # data_pt = load_dataset('Dataset/wine.data', exclude_cols=[0])
-    data_pt = load_dataset('Dataset/weather_madrid_lemd_1997_2015.csv/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0,22])
+    data_pt = load_dataset('Dataset/credit_card_unsupervised.csv', exclude_cols=[0])
 
     # print(data_pt)
     start = timeit.default_timer()
