@@ -27,7 +27,7 @@ def elbow_method(data_pt: np.ndarray):
     y_val = list()
 
     # for k in range(2, int(np.floor(np.sqrt(n / 2)))):
-    for k in range(2, 10):
+    for k in range(2, 11):
         centroids, clusters = k_means(data_pt, k)
         within_cluster_variance = sum_squared_error(data_pt, centroids, clusters)
 
@@ -35,7 +35,10 @@ def elbow_method(data_pt: np.ndarray):
         y_val.append(within_cluster_variance)
 
     plt.plot(x_val, y_val, color='g')
-    plt.plot(x_val, y_val, '+r')
+    plt.plot(x_val, y_val, 'or')
+    plt.title('Dataset : Weather Madrid (1997 - 2015)')
+    plt.xlabel('Value of K')
+    plt.ylabel('Sum Squared Within-Cluster Variance')
     plt.show()
 
     return dict(zip(x_val, y_val))
@@ -47,14 +50,19 @@ def elbow_method_kmedoid(data_pt: np.ndarray):
     x_val = list()
     y_val = list()
 
-    for k in range(2, 10):
+    for k in range(2, 11):
         within_cluster_variance, _ = k_medoids(data_pt, k, use_abs_error=False)
 
         x_val.append(k)
         y_val.append(within_cluster_variance)
 
-    plt.plot(x_val, y_val, color='y')
-    plt.plot(x_val, y_val, 'or')
+    plt.plot(x_val, y_val, color='b')
+    plt.plot(x_val, y_val, '^r')
+    plt.title('Elbow Method : K - Medoids')
+
+    plt.xlabel('Value of K')
+    plt.ylabel('Sum Squared Within-Cluster Variance')
+
     plt.show()
 
     return dict(zip(x_val, y_val))
@@ -95,7 +103,7 @@ def time_comparison_graph(data_pt: np.ndarray):
     plt.ylabel('Elapsed Time (Sec)')
 
     plt.legend()
-    plt.title('Dataset : Weather Madrid (1997 - 2015)')
+    plt.title('Dataset : Credit Card Unsupervised')
 
     plt.show()
     # plt.savefig('weather.png')
@@ -103,9 +111,9 @@ def time_comparison_graph(data_pt: np.ndarray):
 
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0, 22])
+    data_pt = load_dataset('Dataset/google_review_ratings.csv', exclude_cols=[0, 22])
 
-    # _elbow_data = elbow_method(data_pt)
+    _elbow_data = elbow_method(data_pt)
     # elbow_method_kmedoid(data_pt)
 
-    time_comparison_graph(data_pt)
+    # time_comparison_graph(data_pt)
