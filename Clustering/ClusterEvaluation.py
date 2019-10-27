@@ -2,6 +2,7 @@ import timeit
 
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import silhouette_score
 
 from KMeans import k_means, compute_dist
 from KMedoids import k_medoids, load_dataset
@@ -109,11 +110,29 @@ def time_comparison_graph(data_pt: np.ndarray):
     # plt.savefig('weather.png')
 
 
+def intrinsic_eval(data_pt: np.ndarray, k: int):
+    centroids, clusters = k_means(data_pt, k)
+
+    X = []
+    labels = []
+
+    for label, clusters in clusters.items():
+        labels += ([label] * len(clusters))
+        X.append(data_pt[clusters])
+
+    X = np.vstack(X)
+
+    s = silhouette_score(X, labels)
+    print('\nSilhouette Score :', s)
+
+
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/google_review_ratings.csv', exclude_cols=[0, 22])
+    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0])
 
-    _elbow_data = elbow_method(data_pt)
+    # _elbow_data = elbow_method(data_pt)
     # elbow_method_kmedoid(data_pt)
 
     # time_comparison_graph(data_pt)
+
+    intrinsic_eval(data_pt, 3)
