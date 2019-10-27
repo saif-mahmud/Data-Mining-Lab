@@ -60,6 +60,9 @@ Such dataset may help segment the days into different categories which may corre
 \subsection{Google Review Ratings}
 This dataset includes reviews of different types of places from a number of visitors. Available in the UCI repository, this dataset may also help segment the visitors into groups similar to credit card dataset in subsection~\ref{credit}. The attributes contain ratings for different type of places.
 
+\subsection{London bike sharing dataset}
+This unsupervised dataset provides count of new bike shares grouped by hour of the day in London during the years 2015-2016. In addition, the remaining attributes contain information regarding weather(temperature, humidity), season and information like whether the day is a holiday or weekend. This may be used to cluster the different times of the day which may demonstrate a wide range of distinct usage patterns of bike sharing depending on the granularity of the segmentation.
+
 \subsection{BuddyMove Data Set}
 Containing user interest information extracted from user reviews published in the website holidayiq.com, this data may also be used for user segmentation similar to the google review dataset. The attributes contain the number of reviews a user has posted about some particular place type e.g.  theatres or parks.
 
@@ -74,6 +77,7 @@ Containing user interest information extracted from user reviews published in th
 		Credit Card Unsupervised         & 8950                                                                            & 18 \\ \hline
 		Weather Madrid 1997 - 2015            & 6812                                                                            & 23 \\ \hline
 		Google Review Ratings           & 5456                                                                       & 24\\ \hline
+		London bike sharing dataset  & 17414                                                                           & 9\\ \hline
 		BuddyMove Data Set           & 250                                                                           & 6\\ \hline
 	\end{tabular}
 \end{table}
@@ -81,16 +85,24 @@ Containing user interest information extracted from user reviews published in th
 
 \section{Theory and Implementation}
 \subsection{K - Means}
-K - Means is centroid-based partitioning algorithm where the centroid of a cluster, represented by $C_i$ is used to represent the respective cluster.
+K - Means is centroid-based partitioning algorithm where the centroid of a cluster, represented by $C_i$ is used to represent the respective cluster. The distance between an object and the centroid of the cluster is given by the Euclidean distance denoted as dist(p, $c_i$). The sum of squared error between all objects in a cluster and centroid are minimized to improve the cluster quality.
+
+\begin{equation}
+\label{eq:kmean}
+E = \sum_{i=1}^{k} \sum_{p \epsilon C_i} dist(p,c_i)^2
+\end{equation}
+
+The centroid of a cluster is defined as the mean value of the points within the cluster for K-means algorithm. K representative objects are chosen randomly at the beginning. All of the remaining objects are assigned to the cluster for which the distance between the centroid and the object is minimum. The within-cluster variation is improved in an iterative manner by calculating new centroid and updating the cluster assignments.
+
 
 \subsection{K - Medoids}
 K-Medoids algorithm uses actual object from the data as representative for the clusters. Compared K-Means, this approach makes K-Medoids less sensitive to outliers. Each remaining object in the dataset is assigned to the cluster of the closest representative object.
 
-K-medoids algorithm groups n objects into k clusters by minimizing the absolute error defined in (\ref{eq:km})
+K-medoids algorithm groups n objects into k clusters by minimizing the absolute error defined in (\ref{eq:kmd})
 
 \begin{equation}
-\label{eq:km}
- \sum_{i=1}^{k} \sum_{p \epsilon C_i} dist(p,o_i)
+\label{eq:kmd}
+ E = \sum_{i=1}^{k} \sum_{p \epsilon C_i} dist(p,o_i)
 \end{equation}
 
 The Partitioning Around Medoids (PAM) is an iterative, greedy
@@ -197,6 +209,7 @@ are tried out. This process continues until the quality of the resulting cluster
 
 
 \section{Conclusion}
+It can be concluded based on the experimental results that, K-medoids algoritm is more robust than K-means since it less affected less by outliers and noise. However, K-medoids much is costlier in terms of the time complexity especially if PAM implementation is used. I case of using CLARA, the size of the random sample is also a factor. Both of this algorithms have the limitation that the number of clusters need to be defined prior to running the algorithms.
 
 
 
