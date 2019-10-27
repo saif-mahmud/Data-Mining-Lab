@@ -52,11 +52,15 @@ def k_means(data_pt: np.ndarray, k: int, visualize=False):
 
     while True:
         i = i + 1
+        y_pred = list()
 
         _clusters = np.zeros(data_pt.shape[0])
         clusters = {label: [] for label in range(k)}
         for data_idx in range(data_pt.shape[0]):
             min_idx = cluster_assignment(data_pt, data_idx, centroids, clusters)
+
+            y_pred.append(min_idx)
+
             clusters[min_idx].append(data_idx)
             _clusters[data_idx] = min_idx
 
@@ -78,16 +82,16 @@ def k_means(data_pt: np.ndarray, k: int, visualize=False):
         if visualize:
             viz.visualize_iteration(i, _clusters)
 
-    return centroids, clusters
+    return centroids, clusters, y_pred
 
 
 if __name__ == '__main__':
     # data_pt = load_dataset('Dataset/wine.data', exclude_cols=[0])
-    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0,21])
+    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[0], exclude_rows=[])
 
     # print(data_pt)
     start = timeit.default_timer()
-    centroids, clusters = k_means(data_pt, k=5, visualize=True)
+    centroids, clusters, y_pred = k_means(data_pt, k=3, visualize=True)
     stop = timeit.default_timer()
 
     print('\nTotal Time Elepsed (Sec) :', stop - start)

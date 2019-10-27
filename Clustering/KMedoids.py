@@ -6,16 +6,20 @@ from tabulate import tabulate
 from Visualization import Cluster_viz
 
 
-def load_dataset(file: str, exclude_cols: list, sep=','):
-    data_pt = np.genfromtxt(file, delimiter=sep, skip_header=1)
+def load_dataset(file: str, exclude_cols: list, exclude_rows: list, sep=','):
+    data_pt = np.genfromtxt(file, delimiter=sep)
+
+    y_true = data_pt[:, exclude_cols[0]]
+
+    data_pt = np.delete(data_pt, obj=exclude_rows, axis=0)
     data_pt = np.delete(data_pt, obj=exclude_cols, axis=1)
-    #replace nan with mean of column
+    # replace nan with mean of column
     data_pt = np.where(np.isnan(data_pt), np.ma.array(data_pt, mask=np.isnan(data_pt)).mean(axis=0), data_pt)
 
     print(tabulate([['Dataset Size', data_pt.shape[0]], ['Instance Dimension', data_pt.shape[1]]], tablefmt='grid',
                    headers=['Dataset Summary', file]))
 
-    return data_pt
+    return data_pt, y_true.tolist()
 
 
 def get_distance(pt1: np.ndarray, pt2: np.ndarray, manhattan=True):
@@ -44,14 +48,14 @@ def get_cluster_assignment_with_cost(data: np.ndarray, k: int, medoid_idx, use_a
     return cluster_assignment, cost
 
 
-def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, use_abs_error= True, visualize=False):
+def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, use_abs_error=True, visualize=False):
     n_sample, n_feat = data.shape
     medoid_idx = init_meloid(data, k)
 
     if visualize:
         viz = Cluster_viz(data)
 
-    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx,use_abs_error)
+    cluster_assignment, old_cost = get_cluster_assignment_with_cost(data, k, medoid_idx, use_abs_error)
     print('init---', 'medoids', medoid_idx, 'cost', old_cost)
     if visualize:
         viz.visualize_iteration(0, cluster_assignment)
@@ -59,7 +63,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, us
     for _it in range(max_iter):
         swap_flag = False
         if clara:
-            samples = np.random.randint(low=0, high=n_sample, size=n_sample//sampling)
+            samples = np.random.randint(low=0, high=n_sample, size=n_sample // sampling)
         else:
             samples = range(n_sample)
         for n in samples:
@@ -69,7 +73,8 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, us
                 new_medoid_idx = deepcopy(medoid_idx)
                 new_medoid_idx[swap_pos] = n
 
-                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data, k, new_medoid_idx, use_abs_error)
+                _new_cluster_assignment, new_cost = get_cluster_assignment_with_cost(data, k, new_medoid_idx,
+                                                                                     use_abs_error)
 
                 if new_cost < old_cost:
                     # print('swapped', medoid_idx[swap_pos], 'with', n)
@@ -91,7 +96,7 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, us
 
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0,21])
+    data_pt, _ = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0, 21], exclude_rows=[0])
 
     # print(data_pt[0:5,:]-data_pt[1,:])
     # print(get_distance(data_pt[0:5,:],data_pt[1,:]))

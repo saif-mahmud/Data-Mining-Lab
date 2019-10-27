@@ -2,6 +2,7 @@ import timeit
 
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn import metrics
 from sklearn.metrics import silhouette_score
 
 from KMeans import k_means, compute_dist
@@ -110,8 +111,8 @@ def time_comparison_graph(data_pt: np.ndarray):
     # plt.savefig('weather.png')
 
 
-def intrinsic_eval(data_pt: np.ndarray, k: int):
-    centroids, clusters = k_means(data_pt, k)
+def cluster_eval(data_pt: np.ndarray, k: int, y_true: list, purity=False):
+    centroids, clusters, y_pred = k_means(data_pt, k)
 
     X = []
     labels = []
@@ -125,14 +126,22 @@ def intrinsic_eval(data_pt: np.ndarray, k: int):
     s = silhouette_score(X, labels)
     print('\nSilhouette Score :', s)
 
+    if purity:
+        print('Purity :', purity_score(y_true, y_pred))
+
+
+def purity_score(y_true, y_pred):
+    contingency_matrix = metrics.cluster.contingency_matrix(y_true, y_pred)
+    return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0])
+    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[0], exclude_rows=[])
 
     # _elbow_data = elbow_method(data_pt)
     # elbow_method_kmedoid(data_pt)
 
     # time_comparison_graph(data_pt)
+    _, _, y_pred = k_means(data_pt, k=3)
 
-    intrinsic_eval(data_pt, 3)
+    cluster_eval(data_pt, 3, y_true)
