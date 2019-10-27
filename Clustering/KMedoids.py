@@ -91,10 +91,10 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, us
 
 
 if __name__ == '__main__':
-    data_pt = load_dataset('Dataset/buddymove_holidayiq.csv', exclude_cols=[0])
+    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0,21])
 
     # print(data_pt[0:5,:]-data_pt[1,:])
     # print(get_distance(data_pt[0:5,:],data_pt[1,:]))
     # print(get_distance(data_pt[0,:],data_pt[1,:],manhattan=False))
 
-    k_medoids(data_pt, 3, visualize=True)
+    k_medoids(data_pt, 5, visualize=True, sampling=8)

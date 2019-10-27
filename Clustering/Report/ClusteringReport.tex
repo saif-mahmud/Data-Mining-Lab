@@ -27,6 +27,7 @@
 \usepackage{multirow}
 \usepackage{longtable}
 \usepackage{multirow}
+\usepackage{subcaption}
 %\usepackage[a4paper]{geometry}
 \newcommand{\s}{\vspace{0.2cm}}
 \usepackage{float}
@@ -43,7 +44,7 @@
 In this experiment, we have implemented K-Means and K-Medoids Algorithm for Clustering. We have evaluated cluster quality in terms of purity measure and included analysis for determining number of clusters using elbow method. Execution time for varied number of clusters for both algorithms have been compared.
 
 \section{Dataset Description}
-Since the task at hand is targeted towards unsupervised segmentation of data, the datasets that have been selected do not have any class label annotations. We chose 3 datasets which we describe in the following subsections-
+Since the task at hand is targeted towards unsupervised segmentation of data, the datasets that have been selected do not have any class label annotations. We chose a number of datasets which have been described in the following subsections.
 
 \subsection{Credit Card Unsupervised}
 \label{credit}
@@ -89,7 +90,7 @@ K-medoids algorithm groups n objects into k clusters by minimizing the absolute 
 
 \begin{equation}
 \label{eq:km}
- \sum_{i=1}^{k}\sum_{p \epsilon C_i} dist(p,o_i)
+ \sum_{i=1}^{k} \sum_{p \Epsilon C_i} dist(p,o_i)
 \end{equation}
 
 The Partitioning Around Medoids (PAM) is an iterative, greedy
@@ -104,30 +105,84 @@ are tried out. This process continues until the quality of the resulting cluster
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = \linewidth, height = 10.5cm]{Elbow_Weather.png}
-	\caption{Determining Value of K through Elbow Method (K - Means)}
-	\label{fig:elbow_weather}
+	\begin{subfigure}{0.5\linewidth}
+		\includegraphics[scale=0.55]{Elbow_Weather.png}
+		\caption{K - Means}
+		\label{fig:elbow_weather}
+	\end{subfigure}%
+	\begin{subfigure}{0.5\linewidth}
+		\includegraphics[scale=0.55]{k_medoids_elbow_weather.png}
+		\caption{K - Medoids}
+		\label{fig:elbow_w_medoid}
+	\end{subfigure}
+	\caption{Determining Value of K through Elbow Method}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = \linewidth, height = 10.5cm]{Elbow_CreditCard.png}
+	\includegraphics[width = 0.7\linewidth, height = 7cm]{Elbow_CreditCard.png}
 	\caption{Determining Value of K through Elbow Method (K - Means)}
 	\label{fig:elbow_credit}
+\end{figure}
+
+\subsection{Visualization}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[scale=0.45]{km/1.png}
+		\caption{Iteration - 1}
+	\end{subfigure}%
+	\begin{subfigure}{0.45\linewidth}
+	\includegraphics[scale=0.45]{km/12.png}
+	\caption{Iteration - 12}
+	\end{subfigure}%
+\hspace{5cm}
+	\begin{subfigure}{0.45\linewidth}
+	\includegraphics[scale=0.45]{km/16.png}
+	\caption{Iteration - 16}
+\end{subfigure}%
+	\begin{subfigure}{0.45\linewidth}
+	\includegraphics[scale=0.45]{km/25.png}
+	\caption{Iteration - 25}
+\end{subfigure}%
+	\caption{Visualization of K Means using PCA on Weather Madrid Dataset}
+\end{figure}
+
+
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[scale=0.45]{kmd/0.png}
+		\caption{Initialization}
+	\end{subfigure}%
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[scale=0.45]{kmd/1.png}
+		\caption{Iteration - 1}
+	\end{subfigure}%
+\hspace{2cm}
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[scale=0.45]{kmd/3.png}
+		\caption{Iteration - 3}
+	\end{subfigure}%
+	\begin{subfigure}{0.45\linewidth}
+		\includegraphics[scale=0.45]{kmd/5.png}
+		\caption{Iteration - 5}
+	\end{subfigure}%
+	\caption{Visualization of K-Medoids using PCA on Weather Madrid Dataset}
 \end{figure}
 
 \subsection{Time Complexity Comparison}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = \linewidth, height = 10.5cm]{Weather.png}
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{Weather.png}
 	\caption{Comparison of Elapsed Time between K - Means and K - Medoids Algorithm}
 	\label{fig:weather}
 \end{figure}
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[width = \linewidth, height = 10.5cm]{Google.png}
+	\includegraphics[width = 0.75\linewidth, height = 7cm]{Google.png}
 	\caption{Comparison of Elapsed Time between K - Means and K - Medoids Algorithm}
 	\label{fig:google}
 \end{figure}

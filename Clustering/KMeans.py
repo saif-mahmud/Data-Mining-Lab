@@ -83,11 +83,11 @@ def k_means(data_pt: np.ndarray, k: int, visualize=False):
 
 if __name__ == '__main__':
     # data_pt = load_dataset('Dataset/wine.data', exclude_cols=[0])
-    data_pt = load_dataset('Dataset/credit_card_unsupervised.csv', exclude_cols=[0])
+    data_pt = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0,21])
 
     # print(data_pt)
     start = timeit.default_timer()
-    centroids, clusters = k_means(data_pt, k=3, visualize=True)
+    centroids, clusters = k_means(data_pt, k=5, visualize=True)
     stop = timeit.default_timer()
 
     print('\nTotal Time Elepsed (Sec) :', stop - start)
