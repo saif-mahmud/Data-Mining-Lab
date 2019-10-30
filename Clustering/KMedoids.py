@@ -97,9 +97,8 @@ def k_medoids(data: np.ndarray, k: int, max_iter=20, clara=True, sampling=10, us
 
 if __name__ == '__main__':
     data_pt, _ = load_dataset('Dataset/weather_madrid_LEMD_1997_2015.csv', exclude_cols=[0, 21], exclude_rows=[0])
-
     # print(data_pt[0:5,:]-data_pt[1,:])
     # print(get_distance(data_pt[0:5,:],data_pt[1,:]))
     # print(get_distance(data_pt[0,:],data_pt[1,:],manhattan=False))
 
-    k_medoids(data_pt, 5, visualize=True, sampling=8)
+    k_medoids(data_pt, 6, visualize=True, sampling=10)

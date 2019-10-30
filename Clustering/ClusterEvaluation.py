@@ -96,7 +96,7 @@ def time_comparison_graph(data_pt: np.ndarray, y_true: list):
 
         eval.append(cluster_eval(data_pt, k, y_true, purity=True))
 
-    print(eval)
+    # print(eval)
 
     # print(kmeans_time)
     # print(kmedoids_time)
@@ -147,11 +147,13 @@ def purity_score(y_true, y_pred):
 
 
 if __name__ == '__main__':
-    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[7], exclude_rows=[])
+    data_pt, y_true = load_dataset('Dataset/wine.data', exclude_cols=[0], exclude_rows=[])
 
     # _elbow_data = elbow_method(data_pt)
     # elbow_method_kmedoid(data_pt)
 
     time_comparison_graph(data_pt, y_true)
 
-    # k = 4
+    # k = 3
+    # print(y_true)
+    # _ = cluster_eval(data_pt, k, y_true, purity=True)
