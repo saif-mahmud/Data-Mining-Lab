@@ -65,8 +65,63 @@ performs aggregation on a data cube, either by climbing up a concept hierarchy f
 
 Drill-down is the reverse of roll-up. It navigates from less detailed data to more detailed data. Drill-down can be realized by either stepping down a concept hierarchy for a dimension or introducing additional dimensions.
 
-\section{Conclusion}
+\section{Experiment Setup}
+\subsection{Schema}
+We designed a star schema simulating warehousing on relational a retail database. The schema is illustrated in 
 
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{schema.png}
+	\caption{Star Schema used in the experiment}
+\end{figure}
+
+\subsection{Operations}
+We have implemented Relational OLAP using oracle database. The operations are as follows 
+
+\subsubsection*{Roll up}
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{rollup-code.jpg}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[]{rollup.jpg}
+	\caption{Rollup grouping output}
+\end{figure}
+
+\subsubsection*{Cube}
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[]{cube-code.jpg}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{cube.jpg}
+	\caption{Cube grouping output}
+\end{figure}
+\subsubsection*{Slice and Dice}
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{sd-code.jpg}
+\end{figure}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[]{sd.jpg}
+	\caption{Slicing output}
+\end{figure}
+\section{Conclusion}
+The separation of operational databases from data warehouses is based on
+the different structures, contents, and uses of the data in these two systems. Decision support requires historic data, whereas operational databases do not typically maintain historic data. In this context, the data in operational databases, though abundant, are
+usually far from complete for decision making. Decision support requires consolidation
+(e.g., aggregation and summarization) of data from heterogeneous sources, resulting
+in high-quality, clean, integrated data. In contrast, operational databases contain only
+detailed raw data, such as transactions, which need to be consolidated before analysis.
+Because the two systems provide quite different functionalities and require different
+kinds of data, it is presently necessary to maintain separate databases. Decision
+Data warehouse assists the decision making process by providing a historical perspective based on need. We have simulated such operations in a synthetic retail data warehouse.
 
 
 \end{document}
